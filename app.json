@@ -1,0 +1,9 @@
+{
+  "name": "appfoodtime",
+  "displayName": "appfoodtime",
+  "splash":{
+    "image": "./assets/splash.jpg",
+    "resizeMode": "cover",
+    "backgroundColor": "#282828"
+  }
+}
