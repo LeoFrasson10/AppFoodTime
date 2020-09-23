@@ -7,7 +7,7 @@ const Navigation: React.FC = () => {
   const navigation = useNavigation();
   return (
     <Container>
-      <SignIn onPress={() => navigation.navigate('SignIn')}>
+      <SignIn onPress={() => navigation.navigate('Dashboard')}>
         <SignInText>
           <Icon name="home" size={25} color="#ff9600" />
         </SignInText>

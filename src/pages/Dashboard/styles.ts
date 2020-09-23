@@ -1,4 +1,6 @@
 import styled from 'styled-components/native';
+import { FlatList } from 'react-native';
+import { Itens } from './index';
 
 export const Container = styled.View`
   flex: 1;
@@ -107,3 +109,4 @@ export const DescriptionContainer = styled.View`
 export const Description = styled.Text`
   font-family: 'Poppins-Regular';
 `;
+export const ItensList = styled(FlatList as new () => FlatList<Itens>)``;

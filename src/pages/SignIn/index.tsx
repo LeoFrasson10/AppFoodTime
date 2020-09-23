@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Image,
   KeyboardAvoidingView,
@@ -21,6 +21,10 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 import logoImg from '../../assets/logo_maior.png';
 
+import { useAuth } from '../../hooks/auth';
+
+import api from '../../services/api';
+
 import {
   Container,
   Title,
@@ -37,44 +41,60 @@ interface SignInFormData {
 
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-  const passwordInputref = useRef<TextInput>(null);
+  const [dadosUser, setDadosUser] = useState('');
+  const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
 
-  const handleSignIn = useCallback(async (data: SignInFormData) => {
-    try {
-      // eslint-disable-next-line no-unused-expressions
-      formRef.current?.setErrors({});
+  const { signIn } = useAuth();
 
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('Digite um e-mail válido'),
-        password: Yup.string().required('Senha obrigatória'),
-      });
-
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-
-      // await signIn({
-      //   email: data.email,
-      //   password: data.password,
-      // })
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
+  const handleSignIn = useCallback(
+    async (data: SignInFormData) => {
+      try {
         // eslint-disable-next-line no-unused-expressions
-        formRef.current?.setErrors(errors);
+        formRef.current?.setErrors({});
 
-        return;
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          password: Yup.string().required('Senha obrigatória'),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        const consulta = await api.post('login', {
+          email: data.email,
+          password: data.password,
+        });
+
+        if (consulta.data) {
+          await api.get(`user?token=${consulta.data.token}`).then(response => {
+            setDadosUser(response.data);
+          });
+          console.log(dadosUser);
+        } else {
+          console.log('Não tem');
+        }
+      } catch (err) {
+        console.log(err);
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+          // eslint-disable-next-line no-unused-expressions
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+
+        Alert.alert(
+          'Erro na autenticação',
+          'Ocorreu um erro ao fazer login, cheque as credenciais',
+        );
       }
-
-      Alert.alert(
-        'Erro na autenticação',
-        'Ocorreu um erro ao fazer login, cheque as credenciais',
-      );
-    }
-  }, []);
+    },
+    [setDadosUser],
+  );
   return (
     <>
       <KeyboardAvoidingView
@@ -100,11 +120,11 @@ const SignIn: React.FC = () => {
                 returnKeyType="next"
                 onSubmitEditing={() => {
                   // eslint-disable-next-line no-unused-expressions
-                  passwordInputref.current?.focus();
+                  passwordInputRef.current?.focus();
                 }}
               />
               <Input
-                ref={passwordInputref}
+                ref={passwordInputRef}
                 secureTextEntry
                 name="password"
                 icon="lock"

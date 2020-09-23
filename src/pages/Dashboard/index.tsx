@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Image, ScrollView, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Form } from '@unform/mobile';
@@ -21,6 +21,7 @@ import {
   ProductContainer,
   DescriptionContainer,
   Description,
+  ItensList,
 } from './styles';
 
 import Navigation from '../../components/Navigation';
@@ -30,9 +31,31 @@ import lunch from '../../assets/category/comida.png';
 import past from '../../assets/category/pastelaria.png';
 
 // import Input from '../../components/Input';
+import api from '../../services/api';
+
+export interface Itens {
+  id: string;
+  titulo: string;
+  descritivo: string;
+  preco: number;
+  // eslint-disable-next-line camelcase
+  categorias_id: string;
+}
+interface Categoria {
+  id: string;
+  descritivo: string;
+}
 
 const Dashboard: React.FC = () => {
   const formRef = useRef<FormHandles>();
+  const [itens, setItens] = useState<Itens[]>([]);
+
+  useEffect(() => {
+    api.get('/').then(response => {
+      setItens(response.data);
+    });
+  }, []);
+
   return (
     <>
       <Container>
@@ -65,7 +88,31 @@ const Dashboard: React.FC = () => {
         <ScrollView>
           <Title>Prato Feito</Title>
           <ProductContainer>
-            <ProductList>
+            <ItensList
+              data={itens}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <ProductList>
+                  <Product>
+                    <ProductTitle>{item.titulo}</ProductTitle>
+                    <DescriptionContainer>
+                      <Description>{item.descritivo}</Description>
+                    </DescriptionContainer>
+                    <PriceContainer>
+                      <ProductPrice>
+                        R$
+                        {item.preco}
+                      </ProductPrice>
+                      <ProductButton onPress={() => {}}>
+                        <Icon size={25} name="plus" color="#000" />
+                      </ProductButton>
+                    </PriceContainer>
+                  </Product>
+                </ProductList>
+              )}
+            />
+
+            {/* <ProductList>
               <Product>
                 <ProductTitle>Picanha</ProductTitle>
                 <DescriptionContainer>
@@ -110,7 +157,7 @@ const Dashboard: React.FC = () => {
                   </ProductButton>
                 </PriceContainer>
               </Product>
-            </ProductList>
+            </ProductList> */}
           </ProductContainer>
         </ScrollView>
       </Container>

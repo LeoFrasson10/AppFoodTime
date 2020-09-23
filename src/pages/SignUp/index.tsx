@@ -18,6 +18,8 @@ import logoImg from '../../assets/logo_maior.png';
 
 import getValidationErrors from '../../utils/getValidationErrors';
 
+import api from '../../services/api';
+
 import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
 
 interface SignUpFormData {
@@ -39,47 +41,54 @@ const SignIn: React.FC = () => {
   const documentInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSignUp = useCallback(async (data: SignUpFormData) => {
-    try {
-      // eslint-disable-next-line no-unused-expressions
-      formRef.current?.setErrors({});
-
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Nome obrigatório'),
-        surname: Yup.string().required('Sobrenome obrigatório'),
-        email: Yup.string()
-          .required('E-mail obrigatório')
-          .email('Digite um e-mail válido'),
-        phone: Yup.number().required('Celular obrigatório').integer(),
-        cpf: Yup.number().required('Cpf obrigatório').integer(),
-        password: Yup.string().min(6, 'No minimo 6 digitos'),
-      });
-
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-
-      // await api.post('/users', data);
-
-      // history.push('/');
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationErrors(err);
-
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
         // eslint-disable-next-line no-unused-expressions
-        formRef.current?.setErrors(errors);
+        formRef.current?.setErrors({});
 
-        return;
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          surname: Yup.string().required('Sobrenome obrigatório'),
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          phone: Yup.number().required('Celular obrigatório').integer(),
+          cpf: Yup.number().required('Cpf obrigatório').integer(),
+          password: Yup.string().min(6, 'No minimo 6 digitos'),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        await api.post('/register', data);
+
+        Alert.alert(
+          'Cadastro realizado com sucesso!',
+          'Você já pode fazer login na aplicação',
+        );
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          // eslint-disable-next-line no-unused-expressions
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+
+        // disparar um toast
+
+        Alert.alert(
+          'Erro no cadastro',
+          'Ocorreu um erro ao fazer cadastro, tente novamente',
+        );
       }
-
-      // disparar um toast
-
-      Alert.alert(
-        'Erro no cadastro',
-        'Ocorreu um erro ao fazer cadastro, tente novamente',
-      );
-    }
-  }, []);
+    },
+    [navigation],
+  );
 
   return (
     <>
