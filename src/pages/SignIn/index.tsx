@@ -1,4 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   Image,
   KeyboardAvoidingView,
@@ -6,6 +7,7 @@ import {
   ScrollView,
   TextInput,
   Alert,
+  ToastAndroid,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Feather';
@@ -41,11 +43,9 @@ interface SignInFormData {
 
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-  const [dadosUser, setDadosUser] = useState('');
   const passwordInputRef = useRef<TextInput>(null);
-  const navigation = useNavigation();
-
   const { signIn } = useAuth();
+  const navigation = useNavigation();
 
   const handleSignIn = useCallback(
     async (data: SignInFormData) => {
@@ -64,21 +64,36 @@ const SignIn: React.FC = () => {
           abortEarly: false,
         });
 
-        const consulta = await api.post('login', {
+        await signIn({
           email: data.email,
           password: data.password,
         });
 
-        if (consulta.data) {
-          await api.get(`user?token=${consulta.data.token}`).then(response => {
-            setDadosUser(response.data);
-          });
-          console.log(dadosUser);
-        } else {
-          console.log('Não tem');
-        }
+        // const consulta = await api.post('login', {
+        //   email: data.email,
+        //   password: data.password,
+        // });
+
+        // if (!consulta.data) {
+        //   console.log('Não tem');
+        //   await AsyncStorage.clear();
+        // } else {
+        //   const { token } = consulta.data;
+        //   const userDados = await api.get(`user?token=${token}`);
+
+        // if (userDados.data) {
+        //   await AsyncStorage.setItem(
+        //     '@Foodtime:user',
+        //     JSON.stringify(userDados.data),
+        //   );
+        //   await AsyncStorage.setItem('@Foodtime:token', token);
+
+        ToastAndroid.showWithGravity(
+          'Login realizado com sucesso! Bem vindo!!',
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM,
+        );
       } catch (err) {
-        console.log(err);
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
           // eslint-disable-next-line no-unused-expressions
@@ -93,7 +108,7 @@ const SignIn: React.FC = () => {
         );
       }
     },
-    [setDadosUser],
+    [signIn],
   );
   return (
     <>

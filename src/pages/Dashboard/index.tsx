@@ -1,8 +1,10 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import { Image, ScrollView, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+
 import {
   Container,
   Text,
@@ -37,7 +39,7 @@ export interface Itens {
   id: string;
   titulo: string;
   descritivo: string;
-  preco: number;
+  preco: string;
   // eslint-disable-next-line camelcase
   categorias_id: string;
 }
@@ -50,10 +52,15 @@ const Dashboard: React.FC = () => {
   const formRef = useRef<FormHandles>();
   const [itens, setItens] = useState<Itens[]>([]);
 
-  useEffect(() => {
+  const loadItens = useCallback(() => {
     api.get('/').then(response => {
       setItens(response.data);
     });
+  }, [setItens]);
+
+  useEffect(() => {
+    loadItens();
+    // teste();
   }, []);
 
   return (
@@ -85,34 +92,30 @@ const Dashboard: React.FC = () => {
             <Input name="name" icon="search" placeholder="Pesquise aqui" />
           </Form>
         </Search> */}
-        <ScrollView>
-          <Title>Prato Feito</Title>
-          <ProductContainer>
-            <ItensList
-              data={itens}
-              keyExtractor={item => item.id}
-              renderItem={({ item }) => (
-                <ProductList>
-                  <Product>
-                    <ProductTitle>{item.titulo}</ProductTitle>
-                    <DescriptionContainer>
-                      <Description>{item.descritivo}</Description>
-                    </DescriptionContainer>
-                    <PriceContainer>
-                      <ProductPrice>
-                        R$
-                        {item.preco}
-                      </ProductPrice>
-                      <ProductButton onPress={() => {}}>
-                        <Icon size={25} name="plus" color="#000" />
-                      </ProductButton>
-                    </PriceContainer>
-                  </Product>
-                </ProductList>
-              )}
-            />
 
-            {/* <ProductList>
+        <ProductContainer>
+          <ItensList
+            data={itens}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => {
+              return (
+                <Product key={item.id}>
+                  <ProductTitle>{item.titulo}</ProductTitle>
+                  <DescriptionContainer>
+                    <Description>{item.descritivo}</Description>
+                  </DescriptionContainer>
+                  <PriceContainer>
+                    <ProductPrice>{`R$ ${item.preco}`}</ProductPrice>
+                    <ProductButton onPress={() => {}}>
+                      <Icon size={25} name="plus" color="#000" />
+                    </ProductButton>
+                  </PriceContainer>
+                </Product>
+              );
+            }}
+          />
+
+          {/* <ProductList>
               <Product>
                 <ProductTitle>Picanha</ProductTitle>
                 <DescriptionContainer>
@@ -158,8 +161,7 @@ const Dashboard: React.FC = () => {
                 </PriceContainer>
               </Product>
             </ProductList> */}
-          </ProductContainer>
-        </ScrollView>
+        </ProductContainer>
       </Container>
       <Navigation />
     </>

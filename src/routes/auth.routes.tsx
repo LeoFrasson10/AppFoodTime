@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { Image } from 'react-native';
@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard';
 import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
 import Cart from '../pages/Cart';
+import Profile from '../pages/Profile';
 
 const Auth = createStackNavigator();
 
@@ -21,10 +22,7 @@ const AuthRoutes: React.FC = () => (
       headerStyle: { backgroundColor: '#282828' },
       cardStyle: { backgroundColor: '#282828' },
     }}
-    initialRouteName="Dashboard"
   >
-    <Auth.Screen name="SignIn" component={SignIn} />
-    <Auth.Screen name="SignUp" component={SignUp} />
     <Auth.Screen
       options={{
         headerShown: true,
@@ -36,6 +34,11 @@ const AuthRoutes: React.FC = () => (
       name="Dashboard"
       component={Dashboard}
     />
+
+    <Auth.Screen name="SignIn" component={SignIn} />
+    <Auth.Screen name="SignUp" component={SignUp} />
+
+    <Auth.Screen name="Profile" component={Profile} />
     <Auth.Screen
       options={{
         headerShown: true,

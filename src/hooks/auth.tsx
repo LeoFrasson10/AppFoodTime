@@ -10,8 +10,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import api from '../services/api';
 
 interface User {
-  id: string;
-  nome: string;
   email: string;
 }
 
@@ -39,16 +37,15 @@ export const AuthProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadStorageData(): Promise<void> {
-      const [token, user] = await AsyncStorage.multiGet([
-        '@Foodtime:token',
+      const [user, token] = await AsyncStorage.multiGet([
         '@Foodtime:user',
+        '@Foodtime:token',
       ]);
 
       if (token[1] && user[1]) {
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
     }
-
     loadStorageData();
   }, []);
 
@@ -57,17 +54,14 @@ export const AuthProvider: React.FC = ({ children }) => {
       email,
       password,
     });
-
-    const { token, user } = response.data;
+    const user = response.data;
 
     await AsyncStorage.multiSet([
-      ['@Foodtime:token', token],
-      ['@Foodtime:user', JSON.stringify(user)],
+      ['@Foodtime:token', user.token],
+      ['@Foodtime:user', JSON.stringify(user.email)],
     ]);
-
-    api.defaults.headers.authorization = `Bearer ${token}`;
-
-    setData({ token, user });
+    // api.defaults.headers.authorization = `Bearer ${token}`;
+    setData({ user });
   }, []);
 
   const signOut = useCallback(async () => {
@@ -76,22 +70,20 @@ export const AuthProvider: React.FC = ({ children }) => {
     setData({} as AuthState);
   }, []);
 
-  const updateUser = useCallback(
-    async (user: User) => {
-      await AsyncStorage.setItem('@Foodtime:user', JSON.stringify(user));
+  // const updateUser = useCallback(
+  //   async (user: User) => {
+  //     await AsyncStorage.setItem('@Foodtime:user', JSON.stringify(user));
 
-      setData({
-        token: data.token,
-        user,
-      });
-    },
-    [setData, data.token],
-  );
+  //     setData({
+  //       token: data.token,
+  //       user,
+  //     });
+  //   },
+  //   [setData, data.token],
+  // );
 
   return (
-    <AuthContext.Provider
-      value={{ user: data.user, signIn, signOut, updateUser }}
-    >
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
