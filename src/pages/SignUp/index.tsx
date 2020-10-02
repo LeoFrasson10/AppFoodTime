@@ -23,10 +23,10 @@ import api from '../../services/api';
 import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
 
 interface SignUpFormData {
-  name: string;
-  surmane: string;
+  nome: string;
+  sobrenome: string;
   email: string;
-  phone: number;
+  numero: number;
   cpf: number;
   password: string;
 }
@@ -48,12 +48,12 @@ const SignIn: React.FC = () => {
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
-          name: Yup.string().required('Nome obrigatório'),
-          surname: Yup.string().required('Sobrenome obrigatório'),
+          nome: Yup.string().required('Nome obrigatório'),
+          sobrenome: Yup.string().required('Sobrenome obrigatório'),
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
-          phone: Yup.number().required('Celular obrigatório').integer(),
+          numero: Yup.number().required('Celular obrigatório').integer(),
           cpf: Yup.number().required('Cpf obrigatório').integer(),
           password: Yup.string().min(6, 'No minimo 6 digitos'),
         });
@@ -107,7 +107,7 @@ const SignIn: React.FC = () => {
             <Form ref={formRef} onSubmit={handleSignUp}>
               <Input
                 autoCapitalize="words"
-                name="name"
+                name="nome"
                 icon="user"
                 placeholder="Nome"
                 returnKeyType="next"
@@ -118,7 +118,7 @@ const SignIn: React.FC = () => {
               <Input
                 ref={surnameInputRef}
                 autoCapitalize="words"
-                name="surname"
+                name="sobrenome"
                 icon="user"
                 placeholder="Sobrenome"
                 returnKeyType="next"
@@ -142,7 +142,7 @@ const SignIn: React.FC = () => {
               <Input
                 ref={phoneInputRef}
                 keyboardType="numeric"
-                name="phone"
+                name="numero"
                 icon="smartphone"
                 placeholder="Celular"
                 returnKeyType="next"
@@ -158,6 +158,7 @@ const SignIn: React.FC = () => {
                 placeholder="CPF"
                 returnKeyType="next"
                 onSubmitEditing={() => {
+                  // eslint-disable-next-line no-unused-expressions
                   passwordInputRef.current?.focus();
                 }}
               />
@@ -170,12 +171,14 @@ const SignIn: React.FC = () => {
                 textContentType="newPassword"
                 returnKeyType="send"
                 onSubmitEditing={() => {
+                  // eslint-disable-next-line no-unused-expressions
                   formRef.current?.submitForm();
                 }}
               />
 
               <Button
                 onPress={() => {
+                  // eslint-disable-next-line no-unused-expressions
                   formRef.current?.submitForm();
                 }}
               >

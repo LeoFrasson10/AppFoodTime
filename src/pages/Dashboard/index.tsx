@@ -1,20 +1,21 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
-import { Image, ScrollView, SafeAreaView } from 'react-native';
+import { Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { Form } from '@unform/mobile';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import { FormHandles } from '@unform/core';
 
+import { useNavigation } from '@react-navigation/native';
 import {
   Container,
   Text,
   Header,
   Category,
   CategoryText,
-  Title,
+  ProductList,
   ContainerMain,
   Search,
-  ProductList,
+  TextTodos,
   Product,
   ProductTitle,
   PriceContainer,
@@ -31,7 +32,7 @@ import beer from '../../assets/category/beber.png';
 import food from '../../assets/category/massa.png';
 import lunch from '../../assets/category/comida.png';
 import past from '../../assets/category/pastelaria.png';
-
+import { useAuth } from '../../hooks/auth';
 // import Input from '../../components/Input';
 import api from '../../services/api';
 
@@ -46,51 +47,103 @@ export interface Itens {
 interface Categoria {
   id: string;
   descritivo: string;
+  status: string;
 }
 
 const Dashboard: React.FC = () => {
   const formRef = useRef<FormHandles>();
   const [itens, setItens] = useState<Itens[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [isFilter, setIsFilter] = useState(true);
+  const { user } = useAuth();
+  const navigation = useNavigation();
 
   const loadItens = useCallback(() => {
     api.get('/').then(response => {
+      setItens([]);
       setItens(response.data);
     });
   }, [setItens]);
 
+  const loadCategoria = useCallback(() => {
+    api.get('/categoria').then(response => {
+      setCategorias(response.data);
+    });
+  }, [setCategorias]);
+
   useEffect(() => {
     loadItens();
-    // teste();
-  }, []);
+    loadCategoria();
+  }, [loadItens, loadCategoria]);
+
+  const handlePratoFeito = useCallback(() => {
+    api.get('/filter/1').then(response => {
+      setItens([]);
+      setItens(response.data);
+    });
+  }, [setItens]);
+
+  const handlePastel = useCallback(() => {
+    api.get('/filter/3').then(response => {
+      setItens([]);
+      setItens(response.data);
+    });
+  }, [setItens]);
+
+  const handleBebida = useCallback(() => {
+    api.get('/filter/4').then(response => {
+      setItens([]);
+      setItens(response.data);
+    });
+  }, [setItens]);
+
+  const handleLanche = useCallback(() => {
+    api.get('/filter/2').then(response => {
+      setItens([]);
+      setItens(response.data);
+    });
+  }, [setItens]);
+
+  const handleAddCart = useCallback(async () => {
+    if (user) {
+      // api.get(`user/${user.email}`).then(response => {
+      //   console.log(response.data);
+      // });
+      console.log('logado');
+    } else {
+      navigation.navigate('SignIn');
+      console.log('naõ logado');
+    }
+  }, [navigation, user]);
+
+  // console.log(filter[0].titulo);
 
   return (
     <>
       <Container>
         <Header style={{ justifyContent: 'flex-start' }}>
-          <Text>Categorias</Text>
+          <Text onPress={loadItens}>Categorias</Text>
           <ContainerMain>
-            <Category onPress={() => {}}>
+            <Category onPress={handlePratoFeito}>
               <Image source={food} />
               <CategoryText>Prato Feito</CategoryText>
             </Category>
-            <Category onPress={() => {}}>
+            <Category onPress={handleLanche}>
               <Image source={lunch} />
               <CategoryText>Lanches</CategoryText>
             </Category>
-            <Category onPress={() => {}}>
+            <Category onPress={handlePastel}>
               <Image source={past} />
               <CategoryText>Pastéris</CategoryText>
             </Category>
-            <Category onPress={() => {}}>
+            <Category onPress={handleBebida}>
               <Image source={beer} />
               <CategoryText>Bebidas</CategoryText>
             </Category>
           </ContainerMain>
         </Header>
-        {/* <Search>
-          <Form ref={formRef} onSubmit={() => {}}>
-            <Input name="name" icon="search" placeholder="Pesquise aqui" />
-          </Form>
+        {/* <Search onPress={loadItens}>
+          <TextTodos>Todos</TextTodos>
         </Search> */}
 
         <ProductContainer>
@@ -105,17 +158,18 @@ const Dashboard: React.FC = () => {
                     <Description>{item.descritivo}</Description>
                   </DescriptionContainer>
                   <PriceContainer>
-                    <ProductPrice>{`R$ ${item.preco}`}</ProductPrice>
-                    <ProductButton onPress={() => {}}>
-                      <Icon size={25} name="plus" color="#000" />
+                    <ProductPrice>{`R$ ${item.preco},00`}</ProductPrice>
+                    <ProductButton onPress={handleAddCart}>
+                      <Icon size={30} name="plus" color="#000" />
                     </ProductButton>
                   </PriceContainer>
                 </Product>
               );
             }}
           />
+        </ProductContainer>
 
-          {/* <ProductList>
+        {/* <ProductList>
               <Product>
                 <ProductTitle>Picanha</ProductTitle>
                 <DescriptionContainer>
@@ -161,7 +215,6 @@ const Dashboard: React.FC = () => {
                 </PriceContainer>
               </Product>
             </ProductList> */}
-        </ProductContainer>
       </Container>
       <Navigation />
     </>

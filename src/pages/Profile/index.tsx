@@ -1,8 +1,8 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
-  Image,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -13,18 +13,104 @@ import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
 import Input from '../../components/Input';
-import Button from '../../components/Button';
-import logoImg from '../../assets/logo_maior.png';
 
-// import getValidationErrors from '../../utils/getValidationErrors';
+import getValidationErrors from '../../utils/getValidationErrors';
 
-// import api from '../../services/api';
+import api from '../../services/api';
 
 import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
 
-const SignIn: React.FC = () => {
-  const navigation = useNavigation();
+interface SignUpFormData {
+  nome: string;
+  sobrenome: string;
+  email: string;
+  numero: number;
+  cpf: number;
+  password: string;
+}
 
+const Profile: React.FC = () => {
+  const formRef = useRef<FormHandles>();
+  const navigation = useNavigation();
+  const [userEmail, setUserEmail] = useState<string | null>();
+  const [userData, setUserData] = useState<SignUpFormData[]>([]);
+
+  const surnameInputRef = useRef<TextInput>(null);
+  const emailInputRef = useRef<TextInput>(null);
+  const phoneInputRef = useRef<TextInput>(null);
+  const documentInputRef = useRef<TextInput>(null);
+  const passwordInputRef = useRef<TextInput>(null);
+
+  const handleSignUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        // eslint-disable-next-line no-unused-expressions
+        formRef.current?.setErrors({});
+
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          surname: Yup.string().required('Sobrenome obrigatório'),
+          email: Yup.string()
+            .required('E-mail obrigatório')
+            .email('Digite um e-mail válido'),
+          phone: Yup.number().required('Celular obrigatório').integer(),
+          cpf: Yup.number().required('Cpf obrigatório').integer(),
+          password: Yup.string().min(6, 'No minimo 6 digitos'),
+        });
+
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+
+        await api.post('/register', data);
+
+        Alert.alert(
+          'Cadastro realizado com sucesso!',
+          'Você já pode fazer login na aplicação',
+        );
+        navigation.goBack();
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationErrors(err);
+
+          // eslint-disable-next-line no-unused-expressions
+          formRef.current?.setErrors(errors);
+
+          return;
+        }
+
+        // disparar um toast
+
+        Alert.alert(
+          'Erro no cadastro',
+          'Ocorreu um erro ao fazer cadastro, tente novamente',
+        );
+      }
+    },
+    [navigation],
+  );
+
+  useEffect(() => {
+    async function loadStorageData(): Promise<void> {
+      const user = await AsyncStorage.getItem('@Foodtime:user');
+      setUserEmail(user);
+    }
+    loadStorageData();
+  }, [setUserEmail]);
+
+  const loadUser = useCallback(() => {
+    api.get(`user/${userEmail}`).then(response => {
+      setUserData(response.data);
+    });
+  }, [userEmail, setUserData]);
+
+  useEffect(() => {
+    loadUser();
+  });
+  // eslint-disable-next-line no-console
+  console.log(userEmail);
+  // eslint-disable-next-line no-console
+  console.log(userData);
   return (
     <>
       <KeyboardAvoidingView
@@ -36,10 +122,8 @@ const SignIn: React.FC = () => {
           contentContainerStyle={{ flex: 1 }}
         >
           <Container>
-            <Image source={logoImg} />
-
-            <Title>Perfil</Title>
-            {/* <Form ref={formRef} onSubmit={handleSignUp}>
+            <Title>Meu perfil</Title>
+            <Form initialData={{}} ref={formRef} onSubmit={handleSignUp}>
               <Input
                 autoCapitalize="words"
                 name="name"
@@ -96,27 +180,7 @@ const SignIn: React.FC = () => {
                   passwordInputRef.current?.focus();
                 }}
               />
-              <Input
-                ref={passwordInputRef}
-                secureTextEntry
-                name="password"
-                icon="lock"
-                placeholder="Senha"
-                textContentType="newPassword"
-                returnKeyType="send"
-                onSubmitEditing={() => {
-                  formRef.current?.submitForm();
-                }}
-              />
-
-              <Button
-                onPress={() => {
-                  formRef.current?.submitForm();
-                }}
-              >
-                Entrar
-              </Button>
-            </Form> */}
+            </Form>
           </Container>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -128,4 +192,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default Profile;

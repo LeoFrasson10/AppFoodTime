@@ -10,6 +10,7 @@ import { useAuth } from '../../hooks/auth';
 const Navigation: React.FC = () => {
   const navigation = useNavigation();
   const { user } = useAuth();
+
   return (
     <Container>
       <SignIn onPress={() => navigation.navigate('Dashboard')}>

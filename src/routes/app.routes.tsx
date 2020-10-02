@@ -36,19 +36,6 @@ const AppRoutes: React.FC = () => (
       name="Dashboard"
       component={Dashboard}
     />
-
-    {/* <Auth.Screen
-            options={{
-              headerShown: true,
-              headerTransparent: false,
-              cardStyle: { backgroundColor: '#F49328' },
-              headerTitle: () => <Image source={Logo} />,
-              headerStyle: { backgroundColor: '#282828', elevation: 0 },
-            }}
-            name="DashboardAuth"
-            component={DashboardAuth}
-          /> */}
-
     <App.Screen name="Profile" component={Profile} />
     <App.Screen
       options={{
