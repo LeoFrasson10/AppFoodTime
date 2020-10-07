@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from 'react';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import { cpf as cpfCnpj } from 'cpf-cnpj-validator';
 import {
   Image,
   ScrollView,
@@ -12,6 +13,7 @@ import {
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
+
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import logoImg from '../../assets/logo_maior.png';
@@ -57,20 +59,28 @@ const SignIn: React.FC = () => {
           cpf: Yup.number().required('Cpf obrigatório').integer(),
           password: Yup.string().min(6, 'No minimo 6 digitos'),
         });
+        const userCpf = data.cpf;
 
-        await schema.validate(data, {
-          abortEarly: false,
-        });
+        const ok = cpfCnpj.isValid(userCpf);
 
-        await api.post('/register', data);
+        if (ok) {
+          await schema.validate(data, {
+            abortEarly: false,
+          });
 
-        Alert.alert(
-          'Cadastro realizado com sucesso!',
-          'Você já pode fazer login na aplicação',
-        );
-        navigation.goBack();
+          await api.post('/register', data);
+
+          Alert.alert(
+            'Cadastro realizado com sucesso!',
+            'Você já pode fazer login na aplicação',
+          );
+          navigation.goBack();
+        } else {
+          Alert.alert('CPF inválido', 'Insira um CPF válido');
+        }
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
+          console.log(err);
           const errors = getValidationErrors(err);
 
           // eslint-disable-next-line no-unused-expressions

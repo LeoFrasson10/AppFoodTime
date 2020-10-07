@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { TextInputProps } from 'react-native';
 import { useField } from '@unform/core';
+
 import { Container, TextInput, Icon } from './styles';
 
 interface InputProps extends TextInputProps {

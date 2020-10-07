@@ -33,6 +33,8 @@ import food from '../../assets/category/massa.png';
 import lunch from '../../assets/category/comida.png';
 import past from '../../assets/category/pastelaria.png';
 import { useAuth } from '../../hooks/auth';
+import { useCart } from '../../hooks/cart';
+
 // import Input from '../../components/Input';
 import api from '../../services/api';
 
@@ -40,7 +42,7 @@ export interface Itens {
   id: string;
   titulo: string;
   descritivo: string;
-  preco: string;
+  preco: number;
   // eslint-disable-next-line camelcase
   categorias_id: string;
 }
@@ -51,6 +53,8 @@ interface Categoria {
 }
 
 const Dashboard: React.FC = () => {
+  const { addToCart } = useCart();
+
   const formRef = useRef<FormHandles>();
   const [itens, setItens] = useState<Itens[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -75,6 +79,17 @@ const Dashboard: React.FC = () => {
     loadItens();
     loadCategoria();
   }, [loadItens, loadCategoria]);
+
+  function handleAddToCart(item: Itens): void {
+    if (user) {
+      // api.get(`user/${user.email}`).then(response => {
+      //   console.log(response.data);
+      // });
+      addToCart(item);
+    } else {
+      navigation.navigate('SignIn');
+    }
+  }
 
   const handlePratoFeito = useCallback(() => {
     api.get('/filter/1').then(response => {
@@ -104,17 +119,17 @@ const Dashboard: React.FC = () => {
     });
   }, [setItens]);
 
-  const handleAddCart = useCallback(async () => {
-    if (user) {
-      // api.get(`user/${user.email}`).then(response => {
-      //   console.log(response.data);
-      // });
-      console.log('logado');
-    } else {
-      navigation.navigate('SignIn');
-      console.log('naõ logado');
-    }
-  }, [navigation, user]);
+  // const handleAddCart = useCallback(async () => {
+  //   if (user) {
+  //     // api.get(`user/${user.email}`).then(response => {
+  //     //   console.log(response.data);
+  //     // });
+  //     navigation.navigate('Cart');
+  //   } else {
+  //     navigation.navigate('SignIn');
+  //     console.log('naõ logado');
+  //   }
+  // }, [navigation, user]);
 
   // console.log(filter[0].titulo);
 
@@ -159,7 +174,7 @@ const Dashboard: React.FC = () => {
                   </DescriptionContainer>
                   <PriceContainer>
                     <ProductPrice>{`R$ ${item.preco},00`}</ProductPrice>
-                    <ProductButton onPress={handleAddCart}>
+                    <ProductButton onPress={() => handleAddToCart(item)}>
                       <Icon size={30} name="plus" color="#000" />
                     </ProductButton>
                   </PriceContainer>

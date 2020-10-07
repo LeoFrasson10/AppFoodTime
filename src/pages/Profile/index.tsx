@@ -151,6 +151,7 @@ const Profile: React.FC = () => {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 name="email"
+                // value={JSON.parse(userEmail)}
                 icon="mail"
                 placeholder="E-mail"
                 returnKeyType="next"
