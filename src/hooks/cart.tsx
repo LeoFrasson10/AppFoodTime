@@ -77,9 +77,21 @@ const CartProvider: React.FC = ({ children }) => {
 
   const decrement = useCallback(
     async id => {
-      const newItens = itens.map(item =>
-        item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
-      );
+      // const newItens = itens.map(item =>
+      //   item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
+      // );
+
+      const newItens: React.SetStateAction<Itens[]> = [];
+
+      itens.map(item => {
+        if (item.id === id) {
+          if (item.quantity > 1) {
+            newItens.push({ ...item, quantity: item.quantity - 1 });
+          }
+        } else {
+          newItens.push(item);
+        }
+      });
 
       setItens(newItens);
 

@@ -7,7 +7,7 @@ import {
   ProductContainer,
   ProductList,
   Product,
-  ProductImage,
+  TextQuantity,
   ProductTitleContainer,
   ProductTitle,
   ProductPriceContainer,
@@ -44,26 +44,6 @@ const SignIn: React.FC = () => {
     decrement(id);
   }
 
-  const cartTotal = useMemo(() => {
-    const total = itens.reduce((accumulator, item) => {
-      const itensSubtotal = item.preco * item.quantity;
-
-      return accumulator + itensSubtotal;
-    }, 0);
-
-    return total;
-  }, [itens]);
-
-  const totalItensInCart = useMemo(() => {
-    const total = itens.reduce((accumulator, item) => {
-      const itensQuantity = item.quantity;
-
-      return accumulator + itensQuantity;
-    }, 0);
-
-    return total;
-  }, [itens]);
-
   return (
     <>
       <Container>
@@ -84,10 +64,8 @@ const SignIn: React.FC = () => {
                     <ProductSinglePrice>{`R$ ${item.preco},00 (uni)`}</ProductSinglePrice>
 
                     <TotalContainer>
-                      <ProductQuantity>{`${item.quantity}x`}</ProductQuantity>
-
                       <ProductPrice>
-                        {`R$ ${item.preco * item.quantity},00`}
+                        {`Subtotal: R$ ${item.preco * item.quantity},00`}
                       </ProductPrice>
                     </TotalContainer>
                   </ProductPriceContainer>
@@ -99,6 +77,7 @@ const SignIn: React.FC = () => {
                   >
                     <FeatherIcon name="plus" color="#282828" size={16} />
                   </ActionButton>
+                  <TextQuantity>{item.quantity}</TextQuantity>
                   <ActionButton
                     testID={`decrement-${item.id}`}
                     onPress={() => handleDecrement(item.id)}

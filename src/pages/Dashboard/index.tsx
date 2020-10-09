@@ -28,6 +28,7 @@ import {
 } from './styles';
 
 import Navigation from '../../components/Navigation';
+import full from '../../assets/category/full2.png';
 import beer from '../../assets/category/beber.png';
 import food from '../../assets/category/massa.png';
 import lunch from '../../assets/category/comida.png';
@@ -137,8 +138,12 @@ const Dashboard: React.FC = () => {
     <>
       <Container>
         <Header style={{ justifyContent: 'flex-start' }}>
-          <Text onPress={loadItens}>Categorias</Text>
+          <Text>Categorias</Text>
           <ContainerMain>
+            <Category onPress={loadItens}>
+              <Image source={full} />
+              <CategoryText>Todos</CategoryText>
+            </Category>
             <Category onPress={handlePratoFeito}>
               <Image source={food} />
               <CategoryText>Prato Feito</CategoryText>

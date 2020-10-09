@@ -7,7 +7,7 @@ export const Container = styled.View`
 `;
 
 export const Header = styled.View`
-  height: 230px;
+  height: 200px;
   background-color: #282828;
   border-bottom-right-radius: 30px;
   border-bottom-left-radius: 30px;
@@ -23,10 +23,10 @@ export const Text = styled.Text`
 
 export const Category = styled.TouchableOpacity`
   background-color: #f49328;
-  width: 76px;
-  height: 76px;
+  width: 62px;
+  height: 62px;
   margin-top: 10px;
-  margin-left: 17px;
+  margin-left: 14px;
   border-radius: 8px;
   align-items: center;
   padding: 2px;
@@ -36,9 +36,10 @@ export const Category = styled.TouchableOpacity`
 export const CategoryText = styled.Text`
   font-family: 'Poppins-Bold';
   position: absolute;
-  top: 80px;
+  top: 70px;
+  margin: auto;
   color: #ffffff;
-  width: 110%;
+  width: 120%;
   text-align: center;
   font-size: 14px;
 `;

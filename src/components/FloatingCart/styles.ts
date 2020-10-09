@@ -2,7 +2,7 @@ import styled from 'styled-components/native';
 
 export const Container = styled.View`
   position: absolute;
-  bottom: 55px;
+  bottom: 53px;
 
   flex-direction: row;
   background: #f49328;
