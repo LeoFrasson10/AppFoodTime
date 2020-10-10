@@ -17,6 +17,7 @@ import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
 import * as Yup from 'yup';
+import { SafeAreaView } from 'react-navigation';
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
@@ -112,61 +113,63 @@ const SignIn: React.FC = () => {
   );
   return (
     <>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ flex: 1 }}
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <Container>
-            <Image source={logoImg} />
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ flex: 1 }}
+          >
+            <Container>
+              <Image source={logoImg} />
 
-            <Title>Faça seu login</Title>
-            <Form ref={formRef} onSubmit={handleSignIn}>
-              <Input
-                autoCorrect={false}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                name="email"
-                icon="mail"
-                placeholder="E-mail"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  // eslint-disable-next-line no-unused-expressions
-                  passwordInputRef.current?.focus();
-                }}
-              />
-              <Input
-                ref={passwordInputRef}
-                secureTextEntry
-                name="password"
-                icon="lock"
-                placeholder="Senha"
-                returnKeyType="send"
-                onSubmitEditing={() => {
-                  // eslint-disable-next-line no-unused-expressions
-                  formRef.current?.submitForm();
-                }}
-              />
+              <Title>Faça seu login</Title>
+              <Form ref={formRef} onSubmit={handleSignIn}>
+                <Input
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  name="email"
+                  icon="mail"
+                  placeholder="E-mail"
+                  returnKeyType="next"
+                  onSubmitEditing={() => {
+                    // eslint-disable-next-line no-unused-expressions
+                    passwordInputRef.current?.focus();
+                  }}
+                />
+                <Input
+                  ref={passwordInputRef}
+                  secureTextEntry
+                  name="password"
+                  icon="lock"
+                  placeholder="Senha"
+                  returnKeyType="send"
+                  onSubmitEditing={() => {
+                    // eslint-disable-next-line no-unused-expressions
+                    formRef.current?.submitForm();
+                  }}
+                />
 
-              <Button
-                onPress={() => {
-                  // eslint-disable-next-line no-unused-expressions
-                  formRef.current?.submitForm();
-                }}
-              >
-                Entrar
-              </Button>
-            </Form>
-          </Container>
-        </ScrollView>
-      </KeyboardAvoidingView>
-      <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
-        <Icon name="log-in" size={20} color="#ff9600" />
-        <CreateAccountButtonText>Criar uma conta</CreateAccountButtonText>
-      </CreateAccountButton>
+                <Button
+                  onPress={() => {
+                    // eslint-disable-next-line no-unused-expressions
+                    formRef.current?.submitForm();
+                  }}
+                >
+                  Entrar
+                </Button>
+              </Form>
+            </Container>
+          </ScrollView>
+        </KeyboardAvoidingView>
+        <CreateAccountButton onPress={() => navigation.navigate('SignUp')}>
+          <Icon name="log-in" size={20} color="#ff9600" />
+          <CreateAccountButtonText>Criar uma conta</CreateAccountButtonText>
+        </CreateAccountButton>
+      </SafeAreaView>
     </>
   );
 };

@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import { FlatList } from 'react-native';
+import { FlatList, TextInput } from 'react-native';
 
 export const Container = styled.SafeAreaView`
   flex: 1;
@@ -16,7 +16,14 @@ export const ProductContainer = styled.View`
 
 export const ProductList = styled(FlatList)`
   flex: 1;
+  margin-bottom: 10px;
   padding: 0 10px;
+`;
+
+export const ContainerObs = styled.View`
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 130px;
 `;
 
 export const Product = styled.View`
@@ -92,4 +99,23 @@ export const TextQuantity = styled.Text`
   border-radius: 5px;
   padding: 5px;
   margin-bottom: 5px;
+`;
+
+export const Finish = styled.TouchableOpacity`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #f42828;
+  border-top-width: 0px;
+  padding: 16px 0;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+
+export const FinishText = styled.Text`
+  font-size: 18px;
+  color: #fff;
+  font-weight: bold;
 `;

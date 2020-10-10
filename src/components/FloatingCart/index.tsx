@@ -1,17 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
 
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   Container,
   CartPricing,
   CartButton,
   CartButtonText,
   CartTotalPrice,
-  Finish,
-  FinishText,
 } from './styles';
 
 // Calculo do total
@@ -20,7 +19,7 @@ import { useCart } from '../../hooks/cart';
 
 const FloatingCart: React.FC = () => {
   const { itens } = useCart();
-
+  const [totalInCart, setTotalInCart] = useState('');
   const navigation = useNavigation();
 
   const cartTotal = useMemo(() => {
@@ -42,6 +41,29 @@ const FloatingCart: React.FC = () => {
 
     return total;
   }, [itens]);
+
+  const totalCart = useCallback(async () => {
+    if (cartTotal >= 0) {
+      await AsyncStorage.setItem(
+        '@Foodtime:cartTotal',
+        JSON.stringify(cartTotal),
+      );
+    }
+  }, [cartTotal]);
+
+  useEffect(() => {
+    async function loadProducts(): Promise<void> {
+      const valorTotal = await AsyncStorage.getItem('@Foodtime:cartTotal');
+
+      if (valorTotal) {
+        setTotalInCart(JSON.parse(valorTotal));
+      }
+    }
+
+    totalCart();
+    loadProducts();
+  }, [totalCart, setTotalInCart]);
+
   return (
     <>
       <Container>
@@ -54,9 +76,6 @@ const FloatingCart: React.FC = () => {
           <CartTotalPrice>{`R$ ${cartTotal},00`}</CartTotalPrice>
         </CartPricing>
       </Container>
-      <Finish>
-        <FinishText>Finalizar pedido</FinishText>
-      </Finish>
     </>
   );
 };

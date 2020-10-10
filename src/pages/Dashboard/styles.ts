@@ -39,9 +39,9 @@ export const CategoryText = styled.Text`
   top: 70px;
   margin: auto;
   color: #ffffff;
-  width: 120%;
+  width: 140%;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
 `;
 
 export const ContainerMain = styled.View`

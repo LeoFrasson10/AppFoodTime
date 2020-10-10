@@ -2,7 +2,7 @@ import styled from 'styled-components/native';
 
 export const Container = styled.View`
   position: absolute;
-  bottom: 53px;
+  bottom: 52px;
 
   flex-direction: row;
   background: #f49328;
@@ -38,23 +38,4 @@ export const CartButtonText = styled.Text`
   margin-left: 15px;
   flex: 1;
   margin-right: auto;
-`;
-
-export const Finish = styled.View`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: #f42828;
-  border-top-width: 0px;
-  padding: 16px 0;
-  justify-content: center;
-  align-items: center;
-  flex-direction: row;
-`;
-
-export const FinishText = styled.Text`
-  font-size: 18px;
-  color: #fff;
-  font-weight: bold;
 `;

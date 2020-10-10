@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Image } from 'react-native';
+import { Image, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -58,7 +58,7 @@ const Dashboard: React.FC = () => {
 
   const formRef = useRef<FormHandles>();
   const [itens, setItens] = useState<Itens[]>([]);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  // const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [isFilter, setIsFilter] = useState(true);
   const { user } = useAuth();
   const navigation = useNavigation();
@@ -70,16 +70,15 @@ const Dashboard: React.FC = () => {
     });
   }, [setItens]);
 
-  const loadCategoria = useCallback(() => {
-    api.get('/categoria').then(response => {
-      setCategorias(response.data);
-    });
-  }, [setCategorias]);
+  // const loadCategoria = useCallback(() => {
+  //   api.get('/categoria').then(response => {
+  //     setCategorias(response.data);
+  //   });
+  // }, [setCategorias]);
 
   useEffect(() => {
     loadItens();
-    loadCategoria();
-  }, [loadItens, loadCategoria]);
+  }, [loadItens]);
 
   function handleAddToCart(item: Itens): void {
     if (user) {
@@ -87,6 +86,11 @@ const Dashboard: React.FC = () => {
       //   console.log(response.data);
       // });
       addToCart(item);
+      ToastAndroid.showWithGravity(
+        'Item adicionado ao carrinho!',
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM,
+      );
     } else {
       navigation.navigate('SignIn');
     }
@@ -119,20 +123,6 @@ const Dashboard: React.FC = () => {
       setItens(response.data);
     });
   }, [setItens]);
-
-  // const handleAddCart = useCallback(async () => {
-  //   if (user) {
-  //     // api.get(`user/${user.email}`).then(response => {
-  //     //   console.log(response.data);
-  //     // });
-  //     navigation.navigate('Cart');
-  //   } else {
-  //     navigation.navigate('SignIn');
-  //     console.log('naõ logado');
-  //   }
-  // }, [navigation, user]);
-
-  // console.log(filter[0].titulo);
 
   return (
     <>

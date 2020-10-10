@@ -18,12 +18,24 @@ const Navigation: React.FC = () => {
           <Icon name="home" size={25} color="#ff9600" />
         </SignInText>
       </SignIn>
-
-      <SignIn onPress={() => navigation.navigate('Cart')}>
-        <SignInText>
-          <Icon name="shopping-cart" size={25} color="#ff9600" />
-        </SignInText>
-      </SignIn>
+      {user ? (
+        <SignIn onPress={() => navigation.navigate('Cart')}>
+          <SignInText>
+            <Icon name="shopping-cart" size={25} color="#ff9600" />
+          </SignInText>
+        </SignIn>
+      ) : (
+        <SignIn
+          onPress={() => {
+            // eslint-disable-next-line no-unused-expressions
+            navigation.navigate('SignIn');
+          }}
+        >
+          <SignInText>
+            <Icon name="shopping-cart" size={25} color="#ff9600" />
+          </SignInText>
+        </SignIn>
+      )}
       <SignIn
         onPress={async () => {
           await AsyncStorage.clear();
