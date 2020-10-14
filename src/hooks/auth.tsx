@@ -55,13 +55,18 @@ export const AuthProvider: React.FC = ({ children }) => {
       password,
     });
     const user = response.data;
+    if(response.data){
 
-    await AsyncStorage.multiSet([
-      ['@Foodtime:token', user.token],
-      ['@Foodtime:user', JSON.stringify(user.email)],
-    ]);
-    // api.defaults.headers.authorization = `Bearer ${token}`;
-    setData({ user });
+      const responseEmail = await api.get(`user/${email}`);
+      await AsyncStorage.multiSet([
+        ['@Foodtime:token', user.token],
+        ['@Foodtime:user', JSON.stringify(user.email)],
+        ['@Foodtime:userDados', JSON.stringify(responseEmail.data)],
+      ]);
+      // api.defaults.headers.authorization = `Bearer ${token}`;
+      setData({ user });
+    }
+
   }, []);
 
   const signOut = useCallback(async () => {

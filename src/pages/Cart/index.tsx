@@ -1,7 +1,7 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { View } from 'react-native';
+import { View, ToastAndroid } from 'react-native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
+import api from '../../services/api';
 import Input from '../../components/Input';
 import {
   Container,
@@ -32,25 +33,35 @@ import {
 
 import FloatingCart from '../../components/FloatingCart';
 import { useCart } from '../../hooks/cart';
+import { useAuth } from '../../hooks/auth';
 
 export interface Itens {
   id: string;
-  titulo: string;
-  descritivo: string;
   preco: number;
   // eslint-disable-next-line camelcase
-  categorias_id: string;
   quantity: number;
+}
+interface User {
+  id: number;
+  nome: string;
+  sobrenome: string;
+  email: string;
+  numero: number;
+  cpf: number;
 }
 
 interface Observacao {
-  observacao: string;
+  observacao?: string;
 }
 
 const Cart: React.FC = () => {
   // const [itensData, setItensData] = useState<Itens[]>([]);
   const { increment, decrement, itens } = useCart();
   const formRef = useRef<FormHandles>(null);
+  const { user } = useAuth();
+  const [dadosUser, setDadosUser] = useState<User[]>([]);
+  const [itensCart, setItensCart] = useState<Itens[]>([]);
+  const [obs, setObs] = useState('Nenhuma');
 
   function handleIncrement(id: string): void {
     increment(id);
@@ -60,56 +71,103 @@ const Cart: React.FC = () => {
     decrement(id);
   }
 
-  // const handleFinishPedido = useCallback(async (data: Observacao) => {
-  //   try {
-  //     console.log(data.observacao);
-  //   } catch (error) {
-  //     //
-  //   }
-  //   // const totalStorage = await AsyncStorage.getItem('@Foodtime:itens');
+  const handleFinishPedido = useCallback(
+    async (data: Observacao) => {
+      try {
+        // eslint-disable-next-line no-unused-expressions
+        formRef.current?.setErrors({});
 
-  //   // if (data) {
-  //   //   setItens([...JSON.parse(itensData)]);
-  //   // }
-  //   // console.log(totalStorage);
-  // }, []);
-  const handleFinishPedido = useCallback(async (data: Observacao) => {
-    try {
-      // eslint-disable-next-line no-unused-expressions
-      formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          observacao: Yup.string(),
+        });
 
-      const schema = Yup.object().shape({
-        observacao: Yup.string(),
-      });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
+        if (data.observacao) {
+          setObs(data.observacao);
+        }
 
-      console.log(data.observacao);
+        const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
+        if (userDados) {
+          setDadosUser(JSON.parse(userDados));
+        }
 
-      // const consulta = await api.post('login', {
-      //   email: data.email,
-      //   password: data.password,
-      // });
+        const itensCartData = await AsyncStorage.getItem('@Foodtime:itens');
+        if (itensCartData) {
+          setItensCart(JSON.parse(itensCartData));
+        }
 
-      // if (!consulta.data) {
-      //   console.log('Não tem');
-      //   await AsyncStorage.clear();
-      // } else {
-      //   const { token } = consulta.data;
-      //   const userDados = await api.get(`user?token=${token}`);
+        const valorCart = await AsyncStorage.getItem('@Foodtime:cartTotal');
 
-      // if (userDados.data) {
-      //   await AsyncStorage.setItem(
-      //     '@Foodtime:user',
-      //     JSON.stringify(userDados.data),
-      //   );
-      //   await AsyncStorage.setItem('@Foodtime:token', token);
-    } catch (err) {
-      //
-    }
-  }, []);
+        // console.log(obs);
+        // console.log(itensCart[0].descritivo);
+        // console.log(dadosUser[0].id);
+        // console.log(valorCart);
+
+        if (valorCart !== 0) {
+          try {
+            await api.post('pedido', {
+              user_id: dadosUser[0].id,
+              valortotal: valorCart,
+              observacao: obs,
+              itens: [
+                itensCart.map(i => {
+                  i.id, i.quantity, i.preco;
+                }),
+              ],
+            });
+            ToastAndroid.showWithGravity(
+              'Pedido realizado',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+            );
+          } catch (err) {
+            ///
+          }
+        } else {
+          ToastAndroid.showWithGravity(
+            'Carrinho Vazio',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+          );
+        }
+
+        // if (itensCart[1] && valorCart[1]) {
+        //   const response = await api.post('pedido', {
+        //     user_id: dadosUser[0].id,
+        //     valortotal: valorCart[1],
+        //     observacao: data.observacao,
+        //     itens: JSON.stringify(itensCart),
+        //   });
+        //   console.log(response.data);
+        // }
+
+        // const consulta = await api.post('login', {
+        //   email: data.email,
+        //   password: data.password,
+        // });
+
+        // if (!consulta.data) {
+        //   console.log('Não tem');
+        //   await AsyncStorage.clear();
+        // } else {
+        //   const { token } = consulta.data;
+        //   const userDados = await api.get(`user?token=${token}`);
+
+        // if (userDados.data) {
+        //   await AsyncStorage.setItem(
+        //     '@Foodtime:user',
+        //     JSON.stringify(userDados.data),
+        //   );
+        //   await AsyncStorage.setItem('@Foodtime:token', token);
+      } catch (err) {
+        //
+      }
+    },
+    [itensCart, dadosUser, obs],
+  );
 
   return (
     <>
