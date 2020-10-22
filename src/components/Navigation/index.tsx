@@ -19,56 +19,67 @@ const Navigation: React.FC = () => {
         </SignInText>
       </SignIn>
       {user ? (
-        <SignIn onPress={() => navigation.navigate('Cart')}>
-          <SignInText>
-            <Icon name="shopping-cart" size={25} color="#ff9600" />
-          </SignInText>
-        </SignIn>
+        <>
+          <SignIn onPress={() => navigation.navigate('Cart')}>
+            <SignInText>
+              <Icon name="shopping-cart" size={25} color="#ff9600" />
+            </SignInText>
+          </SignIn>
+          <SignIn
+            onPress={() => {
+              navigation.navigate('Pedidos');
+            }}
+          >
+            <SignInText>
+              <Icon name="shopping-bag" size={25} color="#ff9600" />
+            </SignInText>
+          </SignIn>
+          <SignIn
+            onPress={() => {
+              navigation.navigate('Profile');
+            }}
+          >
+            <SignInText>
+              <Icon name="user" size={25} color="#ff9600" />
+            </SignInText>
+          </SignIn>
+        </>
       ) : (
-        <SignIn
-          onPress={() => {
-            // eslint-disable-next-line no-unused-expressions
-            navigation.navigate('SignIn');
-          }}
-        >
-          <SignInText>
-            <Icon name="shopping-cart" size={25} color="#ff9600" />
-          </SignInText>
-        </SignIn>
+        <>
+          <SignIn
+            onPress={() => {
+              navigation.navigate('SignIn');
+            }}
+          >
+            <SignInText>
+              <Icon name="shopping-cart" size={25} color="#ff9600" />
+            </SignInText>
+          </SignIn>
+          <SignIn
+            onPress={() => {
+              navigation.navigate('SignIn');
+            }}
+          >
+            <SignInText>
+              <Icon name="shopping-bag" size={25} color="#ff9600" />
+            </SignInText>
+          </SignIn>
+          <SignIn
+            onPress={() => {
+              navigation.navigate('SignIn');
+            }}
+          >
+            <SignInText>
+              <Icon name="user" size={25} color="#ff9600" />
+            </SignInText>
+          </SignIn>
+        </>
       )}
-      <SignIn
-        onPress={async () => {
-          await AsyncStorage.clear();
-          BackHandler.exitApp();
-        }}
-      >
-        <SignInText>
-          <Icon name="shopping-bag" size={25} color="#ff9600" />
-        </SignInText>
-      </SignIn>
-      {user ? (
-        <SignIn
-          onPress={() => {
-            // eslint-disable-next-line no-unused-expressions
-            navigation.navigate('Profile');
-          }}
-        >
-          <SignInText>
+
+      {/* <SignInText>
             <Icon name="user" size={25} color="#ff9600" />
           </SignInText>
-        </SignIn>
-      ) : (
-        <SignIn
-          onPress={() => {
-            // eslint-disable-next-line no-unused-expressions
-            navigation.navigate('SignIn');
-          }}
-        >
-          <SignInText>
-            <Icon name="user" size={25} color="#ff9600" />
-          </SignInText>
-        </SignIn>
-      )}
+        </SignIn> */}
     </Container>
   );
 };

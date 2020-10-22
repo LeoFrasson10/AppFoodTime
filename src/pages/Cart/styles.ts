@@ -101,6 +101,30 @@ export const TextQuantity = styled.Text`
   margin-bottom: 5px;
 `;
 
+export const CartClean = styled.View`
+  background: #fff;
+  padding: 15px 10px;
+  border-radius: 5px;
+
+  margin: 5px;
+  flex-direction: row;
+`;
+
+export const CartCleanContainerTitle = styled.View`
+  font-size: 16px;
+  margin-left: 5px;
+  height: 80px;
+  margin: auto;
+`;
+
+export const CartCleanTitle = styled.Text`
+  font-size: 24px;
+  text-align: center;
+  font-weight: bold;
+  margin: auto;
+  color: #000;
+`;
+
 export const Finish = styled.TouchableOpacity`
   position: absolute;
   left: 0;

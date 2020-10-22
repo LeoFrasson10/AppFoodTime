@@ -1,11 +1,13 @@
-import React, { useCallback, useRef, useState } from 'react';
+/* eslint-disable no-unused-expressions */
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { View, ToastAndroid } from 'react-native';
+import { View, ToastAndroid, Alert } from 'react-native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
@@ -29,6 +31,9 @@ import {
   ProductDesc,
   Finish,
   FinishText,
+  CartClean,
+  CartCleanContainerTitle,
+  CartCleanTitle,
 } from './styles';
 
 import FloatingCart from '../../components/FloatingCart';
@@ -37,6 +42,8 @@ import { useAuth } from '../../hooks/auth';
 
 export interface Itens {
   id: string;
+  titulo: string;
+  descritivo: string;
   preco: number;
   // eslint-disable-next-line camelcase
   quantity: number;
@@ -56,9 +63,11 @@ interface Observacao {
 
 const Cart: React.FC = () => {
   // const [itensData, setItensData] = useState<Itens[]>([]);
-  const { increment, decrement, itens } = useCart();
+  const { increment, decrement, itens, clean } = useCart();
   const formRef = useRef<FormHandles>(null);
   const { user } = useAuth();
+  const navigation = useNavigation();
+
   const [dadosUser, setDadosUser] = useState<User[]>([]);
   const [itensCart, setItensCart] = useState<Itens[]>([]);
   const [obs, setObs] = useState('Nenhuma');
@@ -70,6 +79,19 @@ const Cart: React.FC = () => {
   function handleDecrement(id: string): void {
     decrement(id);
   }
+
+  useEffect(() => {
+    async function loadItensData(): Promise<void> {
+      // const user = await AsyncStorage.getItem('@Foodtime:user');
+      // setUserEmail(user);
+
+      if (itens) {
+        setItensCart(itens);
+      }
+    }
+
+    loadItensData();
+  }, [itens]);
 
   const handleFinishPedido = useCallback(
     async (data: Observacao) => {
@@ -94,11 +116,6 @@ const Cart: React.FC = () => {
           setDadosUser(JSON.parse(userDados));
         }
 
-        const itensCartData = await AsyncStorage.getItem('@Foodtime:itens');
-        if (itensCartData) {
-          setItensCart(JSON.parse(itensCartData));
-        }
-
         const valorCart = await AsyncStorage.getItem('@Foodtime:cartTotal');
 
         // console.log(obs);
@@ -106,23 +123,47 @@ const Cart: React.FC = () => {
         // console.log(dadosUser[0].id);
         // console.log(valorCart);
 
-        if (valorCart !== 0) {
+        if (Number(valorCart) !== 0) {
           try {
-            await api.post('pedido', {
+            const response = await api.post('pedido', {
               user_id: dadosUser[0].id,
               valortotal: valorCart,
               observacao: obs,
-              itens: [
-                itensCart.map(i => {
-                  i.id, i.quantity, i.preco;
-                }),
-              ],
+              itens: itensCart.map(i => {
+                return {
+                  itens_id: i.id,
+                  quantidade: i.quantity,
+                  preco: i.preco,
+                };
+              }),
             });
-            ToastAndroid.showWithGravity(
-              'Pedido realizado',
-              ToastAndroid.SHORT,
-              ToastAndroid.BOTTOM,
-            );
+            if (response) {
+              // ToastAndroid.showWithGravity(
+              //   'Pedido realizado',
+              //   ToastAndroid.SHORT,
+              //   ToastAndroid.BOTTOM,
+              // );
+              Alert.alert(
+                'Pedido realizado com sucesso!',
+                'O que deseja fazer?',
+                [
+                  {
+                    text: 'Ver pedidos',
+                    onPress: () => navigation.navigate('Pedidos'),
+                  },
+                  {
+                    text: 'Ir para o início',
+                    onPress: () => navigation.navigate('Dashboard'),
+                  },
+                ],
+              );
+              clean();
+            }
+
+            // await AsyncStorage.multiRemove([
+            //   '@Foodtime:cartTotal',
+            //   '@Foodtime:itens',
+            // ]);
           } catch (err) {
             ///
           }
@@ -133,40 +174,11 @@ const Cart: React.FC = () => {
             ToastAndroid.BOTTOM,
           );
         }
-
-        // if (itensCart[1] && valorCart[1]) {
-        //   const response = await api.post('pedido', {
-        //     user_id: dadosUser[0].id,
-        //     valortotal: valorCart[1],
-        //     observacao: data.observacao,
-        //     itens: JSON.stringify(itensCart),
-        //   });
-        //   console.log(response.data);
-        // }
-
-        // const consulta = await api.post('login', {
-        //   email: data.email,
-        //   password: data.password,
-        // });
-
-        // if (!consulta.data) {
-        //   console.log('Não tem');
-        //   await AsyncStorage.clear();
-        // } else {
-        //   const { token } = consulta.data;
-        //   const userDados = await api.get(`user?token=${token}`);
-
-        // if (userDados.data) {
-        //   await AsyncStorage.setItem(
-        //     '@Foodtime:user',
-        //     JSON.stringify(userDados.data),
-        //   );
-        //   await AsyncStorage.setItem('@Foodtime:token', token);
       } catch (err) {
         //
       }
     },
-    [itensCart, dadosUser, obs],
+    [itensCart, dadosUser, obs, clean, navigation],
   );
 
   return (
@@ -174,64 +186,82 @@ const Cart: React.FC = () => {
       <Container>
         <ProductContainer>
           <SafeAreaView style={{ flex: 1 }}>
-            <ProductList
-              data={itens}
-              keyExtractor={item => item.id}
-              ListFooterComponent={<View />}
-              renderItem={({ item }: { item: Itens }) => (
-                <Product>
-                  <ProductTitleContainer>
-                    <ProductTitle>{item.titulo}</ProductTitle>
-                    <ProductPriceContainer>
-                      <ProductDesc>{item.descritivo}</ProductDesc>
-                      <ProductSinglePrice>{`R$ ${item.preco},00 (uni)`}</ProductSinglePrice>
+            {itens.length > 0 ? (
+              <>
+                <ProductList
+                  data={itens}
+                  keyExtractor={item => item.id}
+                  ListFooterComponent={<View />}
+                  renderItem={({ item }: { item: Itens }) => (
+                    <Product>
+                      <ProductTitleContainer>
+                        <ProductTitle>{item.titulo}</ProductTitle>
+                        <ProductPriceContainer>
+                          <ProductDesc>{item.descritivo}</ProductDesc>
+                          <ProductSinglePrice>{`R$ ${item.preco},00 (uni)`}</ProductSinglePrice>
 
-                      <TotalContainer>
-                        <ProductPrice>
-                          {`Subtotal: R$ ${item.preco * item.quantity},00`}
-                        </ProductPrice>
-                      </TotalContainer>
-                    </ProductPriceContainer>
-                  </ProductTitleContainer>
-                  <ActionContainer>
-                    <ActionButton
-                      testID={`increment-${item.id}`}
-                      onPress={() => handleIncrement(item.id)}
-                    >
-                      <FeatherIcon name="plus" color="#282828" size={16} />
-                    </ActionButton>
-                    <TextQuantity>{item.quantity}</TextQuantity>
-                    <ActionButton
-                      testID={`decrement-${item.id}`}
-                      onPress={() => handleDecrement(item.id)}
-                    >
-                      <FeatherIcon name="minus" color="#282828" size={16} />
-                    </ActionButton>
-                  </ActionContainer>
-                </Product>
-              )}
-            />
-
-            <Form ref={formRef} onSubmit={handleFinishPedido}>
-              <ContainerObs>
-                <Input
-                  autoCapitalize="words"
-                  name="observacao"
-                  icon="edit-3"
-                  multiline
-                  placeholder="Alguma observação?"
-                  returnKeyType="next"
+                          <TotalContainer>
+                            <ProductPrice>
+                              {`Subtotal: R$ ${item.preco * item.quantity},00`}
+                            </ProductPrice>
+                          </TotalContainer>
+                        </ProductPriceContainer>
+                      </ProductTitleContainer>
+                      <ActionContainer>
+                        <ActionButton
+                          testID={`increment-${item.id}`}
+                          onPress={() => handleIncrement(item.id)}
+                        >
+                          <FeatherIcon name="plus" color="#282828" size={16} />
+                        </ActionButton>
+                        <TextQuantity>{item.quantity}</TextQuantity>
+                        <ActionButton
+                          testID={`decrement-${item.id}`}
+                          onPress={() => handleDecrement(item.id)}
+                        >
+                          <FeatherIcon name="minus" color="#282828" size={16} />
+                        </ActionButton>
+                      </ActionContainer>
+                    </Product>
+                  )}
                 />
-              </ContainerObs>
-            </Form>
+                <Form ref={formRef} onSubmit={handleFinishPedido}>
+                  <ContainerObs>
+                    <Input
+                      autoCapitalize="words"
+                      name="observacao"
+                      icon="edit-3"
+                      multiline
+                      placeholder="Alguma observação?"
+                      returnKeyType="next"
+                    />
+                  </ContainerObs>
+                </Form>
+              </>
+            ) : (
+              <>
+                <CartClean>
+                  <CartCleanContainerTitle>
+                    <CartCleanTitle>Carrinho vazio</CartCleanTitle>
+                  </CartCleanContainerTitle>
+                </CartClean>
+              </>
+            )}
           </SafeAreaView>
         </ProductContainer>
       </Container>
       <FloatingCart />
       <Finish
         onPress={() => {
-          // eslint-disable-next-line no-unused-expressions
-          formRef.current?.submitForm();
+          if (itens.length > 0) {
+            formRef.current?.submitForm();
+          } else {
+            ToastAndroid.showWithGravity(
+              'Carrinho Vazio',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+            );
+          }
         }}
       >
         <FinishText>Finalizar pedido</FinishText>

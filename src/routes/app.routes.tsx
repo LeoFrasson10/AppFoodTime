@@ -11,6 +11,7 @@ import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
 import Cart from '../pages/Cart';
 import Profile from '../pages/Profile';
+import Pedidos from '../pages/Pedidos';
 
 const App = createStackNavigator();
 
@@ -46,6 +47,16 @@ const AppRoutes: React.FC = () => (
       }}
       name="Cart"
       component={Cart}
+    />
+    <App.Screen
+      options={{
+        headerShown: true,
+        headerTransparent: true,
+        cardStyle: { backgroundColor: '#282828' },
+        headerTitle: () => <Image source={Logo} />,
+      }}
+      name="Pedidos"
+      component={Pedidos}
     />
   </App.Navigator>
 );

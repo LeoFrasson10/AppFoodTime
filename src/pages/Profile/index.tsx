@@ -1,114 +1,81 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
-import { Form } from '@unform/mobile';
-import { FormHandles } from '@unform/core';
+
 import AsyncStorage from '@react-native-community/async-storage';
+// import Icon from 'react-native-vector-icons/Feather';
 import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
   TextInput,
   Alert,
+  Image,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+
 import { useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
+import Button from '../../components/Button';
 import Input from '../../components/Input';
-
+import { useAuth } from '../../hooks/auth';
+import { useCart } from '../../hooks/cart';
 import getValidationErrors from '../../utils/getValidationErrors';
-
+import logoImg from '../../assets/logo_maior.png';
 import api from '../../services/api';
 
-import { Container, Title, BackToSignIn, BackToSignInText } from './styles';
+import {
+  Container,
+  Title,
+  BackToSignIn,
+  BackToSignInText,
+  Campo,
+  Icon,
+  Value,
+  ObsAlterDados,
+} from './styles';
 
-interface SignUpFormData {
+interface User {
   nome: string;
   sobrenome: string;
   email: string;
   numero: number;
   cpf: number;
-  password: string;
 }
 
 const Profile: React.FC = () => {
-  const formRef = useRef<FormHandles>();
   const navigation = useNavigation();
-  const [userEmail, setUserEmail] = useState<string | null>();
-  const [userData, setUserData] = useState<SignUpFormData[]>([]);
+  // const [userEmail, setUserEmail] = useState<string | null>();
+  const [userData, setUserData] = useState<User[]>([]);
+  const { clean } = useCart();
+  const { signOut } = useAuth();
 
-  const surnameInputRef = useRef<TextInput>(null);
-  const emailInputRef = useRef<TextInput>(null);
-  const phoneInputRef = useRef<TextInput>(null);
-  const documentInputRef = useRef<TextInput>(null);
-  const passwordInputRef = useRef<TextInput>(null);
-
-  const handleSignUp = useCallback(
-    async (data: SignUpFormData) => {
-      try {
-        // eslint-disable-next-line no-unused-expressions
-        formRef.current?.setErrors({});
-
-        const schema = Yup.object().shape({
-          name: Yup.string().required('Nome obrigatório'),
-          surname: Yup.string().required('Sobrenome obrigatório'),
-          email: Yup.string()
-            .required('E-mail obrigatório')
-            .email('Digite um e-mail válido'),
-          phone: Yup.number().required('Celular obrigatório').integer(),
-          cpf: Yup.number().required('Cpf obrigatório').integer(),
-          password: Yup.string().min(6, 'No minimo 6 digitos'),
-        });
-
-        await schema.validate(data, {
-          abortEarly: false,
-        });
-
-        await api.post('/register', data);
-
-        Alert.alert(
-          'Cadastro realizado com sucesso!',
-          'Você já pode fazer login na aplicação',
-        );
-        navigation.goBack();
-      } catch (err) {
-        if (err instanceof Yup.ValidationError) {
-          const errors = getValidationErrors(err);
-
-          // eslint-disable-next-line no-unused-expressions
-          formRef.current?.setErrors(errors);
-
-          return;
-        }
-
-        // disparar um toast
-
-        Alert.alert(
-          'Erro no cadastro',
-          'Ocorreu um erro ao fazer cadastro, tente novamente',
-        );
-      }
-    },
-    [navigation],
-  );
+  const handleLogOut = useCallback(async () => {
+    await AsyncStorage.removeItem('@Foodtime:cartTotal');
+    signOut();
+    clean();
+  }, [signOut, clean]);
 
   useEffect(() => {
     async function loadStorageData(): Promise<void> {
-      const user = await AsyncStorage.getItem('@Foodtime:user');
-      setUserEmail(user);
+      // const user = await AsyncStorage.getItem('@Foodtime:user');
+      // setUserEmail(user);
+      const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
+      if (userDados) {
+        setUserData(JSON.parse(userDados));
+      }
     }
     loadStorageData();
-  }, [setUserEmail]);
+  }, []);
 
-  const loadUser = useCallback(() => {
-    api.get(`user/${userEmail}`).then(response => {
-      setUserData(response.data);
-    });
-  }, [userEmail, setUserData]);
+  // const loadUser = useCallback(() => {
+  //   api.get(`user/${userEmail}`).then(response => {
+  //     setUserData(response.data);
+  //   });
+  // }, [userEmail, setUserData]);
 
-  useEffect(() => {
-    loadUser();
-  });
+  // useEffect(() => {
+  //   loadUser();
+  // });
   // eslint-disable-next-line no-console
-  console.log(userEmail);
+  // console.log(userData[0].nome);
   // eslint-disable-next-line no-console
   console.log(userData);
   return (
@@ -122,69 +89,37 @@ const Profile: React.FC = () => {
           contentContainerStyle={{ flex: 1 }}
         >
           <Container>
-            <Title>Meu perfil</Title>
-            <Form initialData={{}} ref={formRef} onSubmit={handleSignUp}>
-              <Input
-                autoCapitalize="words"
-                name="name"
-                icon="user"
-                placeholder="Nome"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  surnameInputRef.current?.focus();
-                }}
-              />
-              <Input
-                ref={surnameInputRef}
-                autoCapitalize="words"
-                name="surname"
-                icon="user"
-                placeholder="Sobrenome"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  emailInputRef.current?.focus();
-                }}
-              />
-              <Input
-                ref={emailInputRef}
-                autoCorrect={false}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                name="email"
-                // value={JSON.parse(userEmail)}
-                icon="mail"
-                placeholder="E-mail"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  phoneInputRef.current?.focus();
-                }}
-              />
-              <Input
-                ref={phoneInputRef}
-                keyboardType="numeric"
-                name="phone"
-                icon="smartphone"
-                placeholder="Celular"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  documentInputRef.current?.focus();
-                }}
-              />
-              <Input
-                ref={documentInputRef}
-                keyboardType="numeric"
-                name="cpf"
-                icon="archive"
-                placeholder="CPF"
-                returnKeyType="next"
-                onSubmitEditing={() => {
-                  passwordInputRef.current?.focus();
-                }}
-              />
-            </Form>
+            <Image source={logoImg} />
+            <Title>Meus dados</Title>
+
+            <Campo>
+              <Icon name="user" size={24} />
+              <Value>
+                {`${userData.length > 0 ? userData[0].nome : ''} ${
+                  userData.length > 0 ? userData[0].sobrenome : ''
+                }`}
+              </Value>
+            </Campo>
+            <Campo>
+              <Icon name="mail" size={24} />
+              <Value>{userData.length > 0 ? userData[0].email : ''}</Value>
+            </Campo>
+            <Campo>
+              <Icon name="smartphone" size={24} />
+              <Value>{userData.length > 0 ? userData[0].numero : ''}</Value>
+            </Campo>
+            <Campo>
+              <Icon name="archive" size={24} />
+              <Value>{userData.length > 0 ? userData[0].cpf : ''}</Value>
+            </Campo>
+            <ObsAlterDados>
+              *Para alterar seus dados acessar o site www.foodtime.com.br
+            </ObsAlterDados>
+            <Button onPress={handleLogOut}>Sair</Button>
           </Container>
         </ScrollView>
       </KeyboardAvoidingView>
+
       <BackToSignIn onPress={() => navigation.goBack()}>
         <Icon name="arrow-left" size={20} color="#fff" />
         <BackToSignInText>Voltar</BackToSignInText>

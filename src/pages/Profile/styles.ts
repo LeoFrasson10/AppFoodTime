@@ -1,6 +1,7 @@
 import styled from 'styled-components/native';
 import { Platform } from 'react-native';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 export const Container = styled.View`
   flex: 1;
@@ -37,4 +38,36 @@ export const BackToSignInText = styled.Text`
   font-family: 'RobotoSlab-Regular';
   margin-left: 16px;
   font-size: 18px;
+`;
+
+export const Campo = styled.View`
+  width: 100%;
+  height: 55px;
+  padding: 0 16px;
+  background: #fff;
+  border-radius: 20px;
+  margin-bottom: 8px;
+
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const Icon = styled(FeatherIcon)`
+  margin-right: 16px;
+`;
+
+export const Value = styled.Text`
+  flex: 1;
+  margin-top: 5px;
+  color: #000;
+  font-size: 18px;
+  font-family: 'Poppins-Regular';
+`;
+
+export const ObsAlterDados = styled.Text`
+  margin-top: 5px;
+  margin-bottom: 20px;
+  color: #fff;
+  font-size: 10px;
+  font-family: 'Poppins-Regular';
 `;
