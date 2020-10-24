@@ -7,7 +7,7 @@ export const Container = styled.View`
 `;
 
 export const Header = styled.View`
-  height: 200px;
+  height: 180px;
   background-color: #282828;
   border-bottom-right-radius: 30px;
   border-bottom-left-radius: 30px;
@@ -31,6 +31,7 @@ export const Category = styled.TouchableOpacity`
   align-items: center;
   padding: 2px;
   justify-content: center;
+  align-items: center;
 `;
 
 export const CategoryText = styled.Text`

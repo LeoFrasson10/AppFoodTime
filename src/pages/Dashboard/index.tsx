@@ -1,9 +1,8 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Image, ToastAndroid } from 'react-native';
+import { Image, ToastAndroid, LogBox } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import AsyncStorage from '@react-native-community/async-storage';
 
-import { FormHandles } from '@unform/core';
+// import { FormHandles } from '@unform/core';
 
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -12,10 +11,7 @@ import {
   Header,
   Category,
   CategoryText,
-  ProductList,
   ContainerMain,
-  Search,
-  TextTodos,
   Product,
   ProductTitle,
   PriceContainer,
@@ -54,20 +50,20 @@ interface Categoria {
 }
 
 const Dashboard: React.FC = () => {
+  LogBox.ignoreAllLogs();
   const { addToCart } = useCart();
 
-  const formRef = useRef<FormHandles>();
+  // const formRef = useRef<FormHandles>();
   const [itens, setItens] = useState<Itens[]>([]);
   // const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [isFilter, setIsFilter] = useState(true);
   const { user } = useAuth();
   const navigation = useNavigation();
 
-  const loadItens = useCallback(() => {
-    api.get('/').then(response => {
-      setItens([]);
-      setItens(response.data);
-    });
+  const loadItens = useCallback(async () => {
+    const valor = await api.get('/');
+
+    setItens([]);
+    setItens(valor.data);
   }, [setItens]);
 
   // const loadCategoria = useCallback(() => {
@@ -96,32 +92,28 @@ const Dashboard: React.FC = () => {
     }
   }
 
-  const handlePratoFeito = useCallback(() => {
-    api.get('/filter/1').then(response => {
-      setItens([]);
-      setItens(response.data);
-    });
+  const handlePratoFeito = useCallback(async () => {
+    const valor = await api.get('/filter/1');
+    setItens([]);
+    setItens(valor.data);
   }, [setItens]);
 
-  const handlePastel = useCallback(() => {
-    api.get('/filter/3').then(response => {
-      setItens([]);
-      setItens(response.data);
-    });
+  const handlePastel = useCallback(async () => {
+    const valor = await api.get('/filter/3');
+    setItens([]);
+    setItens(valor.data);
   }, [setItens]);
 
-  const handleBebida = useCallback(() => {
-    api.get('/filter/4').then(response => {
-      setItens([]);
-      setItens(response.data);
-    });
+  const handleBebida = useCallback(async () => {
+    const valor = await api.get('/filter/4');
+    setItens([]);
+    setItens(valor.data);
   }, [setItens]);
 
-  const handleLanche = useCallback(() => {
-    api.get('/filter/2').then(response => {
-      setItens([]);
-      setItens(response.data);
-    });
+  const handleLanche = useCallback(async () => {
+    const valor = await api.get('/filter/2');
+    setItens([]);
+    setItens(valor.data);
   }, [setItens]);
 
   return (
@@ -159,7 +151,7 @@ const Dashboard: React.FC = () => {
         <ProductContainer>
           <ItensList
             data={itens}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => {
               return (
                 <Product key={item.id}>

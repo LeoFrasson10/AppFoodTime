@@ -7,8 +7,7 @@ import Logo from '../assets/logo.png';
 
 import Dashboard from '../pages/Dashboard';
 // import DashboardAuth from '../pages/DashboardAuth';
-import SignIn from '../pages/SignIn';
-import SignUp from '../pages/SignUp';
+
 import Cart from '../pages/Cart';
 import Profile from '../pages/Profile';
 import Pedidos from '../pages/Pedidos';

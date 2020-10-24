@@ -1,116 +1,185 @@
+/* eslint-disable no-nested-ternary */
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { Image, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import FeatherIcon from 'react-native-vector-icons/Feather';
-// import { View, ToastAndroid } from 'react-native';
-// import { Form } from '@unform/mobile';
+
 // import { FormHandles } from '@unform/core';
-// import * as Yup from 'yup';
-// import AsyncStorage from '@react-native-community/async-storage';
 
-// import { ScrollView, TextInput } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { format } from 'date-fns';
+
 import { SafeAreaView } from 'react-navigation';
-import api from '../../services/api';
-
 import {
   Container,
-  ProductContainer,
-  ProductList,
+  Text,
+  Header,
+  ContainerMain,
   Product,
   ProductTitle,
-  ProductPrice,
   PriceContainer,
+  ProductPrice,
   ProductButton,
+  ProductContainer,
   DescriptionContainer,
   Description,
+  ProductCancel,
   ItensList,
-  Finish,
-  FinishText,
+  ProductNameStatus,
+  ProductStatus,
+  StatusContainer,
+  CartClean,
+  CartCleanContainerTitle,
+  CartCleanTitle,
 } from './styles';
 
-// import FloatingCart from '../../components/FloatingCart';
-// import { useCart } from '../../hooks/cart';
-// import { useAuth } from '../../hooks/auth';
+import Navigation from '../../components/Navigation';
+
+import { useAuth } from '../../hooks/auth';
+import { useCart } from '../../hooks/cart';
+// import Input from '../../components/Input';
+import api from '../../services/api';
 
 export interface Pedido {
-  id: number;
-  valorTotal: number;
-  status: string;
-  observacao: string;
+  id: string;
   data: string;
-  itens: Array<{
-    idIp: number;
-    itensId: number;
-    quantidade: number;
-  }>;
-}
-interface User {
-  id: number;
-  nome: string;
-  sobrenome: string;
-  email: string;
-  numero: number;
-  cpf: number;
+  hora: string;
+  status: string;
+  valortotal: string;
 }
 
-const Pedidos: React.FC = () => {
-  const [pedidosData, setPedidosData] = useState<Pedido[]>([]);
-  const [dadosUser, setDadosUser] = useState<User[]>([]);
-  // const { user } = useAuth()
+const Dashboard: React.FC = () => {
+  // const formRef = useRef<FormHandles>();
 
-  useEffect(() => {
-    async function loadStorageData(): Promise<void> {
-      const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
+  // const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [cancelado, setCancelado] = useState('');
 
-      if (userDados) {
-        setDadosUser(JSON.parse(userDados));
+  const loadUser = useCallback(async () => {
+    const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
+    if (userDados) {
+      const { id } = JSON.parse(userDados)[0];
+
+      try {
+        const valor = await api.get(`/pedido/${id}`);
+        setPedidos(valor.data);
+      } catch {
+        console.log('erro');
       }
     }
-    loadStorageData();
+
+    //
   }, []);
 
   useEffect(() => {
-    if (dadosUser[0]) {
-      console.log(dadosUser[0].id);
-      // api.get(`/pedido/${dadosUser[0].id}/`).then(response => {
-      //   setPedidosData(response.data);
-      // });
+    loadUser();
+  }, [loadUser]);
+
+  const handleDetails = useCallback(() => {
+    console.log('detalhe');
+  }, []);
+
+  async function handleCancel(item: Pedido): Promise<void> {
+    try {
+      const cancel = await api.get(`/cancelarUser/${item.id}`);
+    } catch {
+      console.log('erro');
     }
-  }, [dadosUser]);
+    // addToCart(item);
+    // ToastAndroid.showWithGravity(
+    //   'Item adicionado ao carrinho!',
+    //   ToastAndroid.SHORT,
+    //   ToastAndroid.BOTTOM,
+    // );
+  }
+
+  // const handlePratoFeito = useCallback(async () => {
+  //   const valor = await api.get('/filter/1');
+  //   setItens([]);
+  //   setItens(valor.data);
+  // }, [setItens]);
 
   return (
     <>
       <Container>
-        {/* <ProductContainer>
-           <ItensList
-            data={pedidosData}
-            keyExtractor={pedido => pedido}
-            renderItem={({ pedido }: { pedido: Pedido }) => {
-              return (
-                <Product key={pedido.id}>
-                  <ProductTitle>{pedido.data}</ProductTitle>
-                  <DescriptionContainer>
-                    <Description>{pedido.observacao}</Description>
-                  </DescriptionContainer>
-                  <PriceContainer>
-                    <ProductPrice>{`R$ ${pedido.valorTotal},00`}</ProductPrice>
-                    {/* <ProductButton onPress={() => handleAddToCart(item)}>
-                      <Icon size={30} name="plus" color="#000" />
-                    </ProductButton>
-                  </PriceContainer>
-                </Product>
-              );
-            }}
-          />
-        </ProductContainer> */}
-      </Container>
+        <Header style={{ justifyContent: 'flex-start' }}>
+          <ContainerMain>
+            <Text>Meus Pedidos</Text>
+          </ContainerMain>
+        </Header>
 
-      <Finish onPress={() => {}}>
-        <FinishText>Pedidos</FinishText>
-      </Finish>
+        <ProductContainer>
+          <SafeAreaView style={{ flex: 1 }}>
+            {pedidos.length > 0 ? (
+              <>
+                <ItensList
+                  data={pedidos}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }: { item: Pedido }) => {
+                    return (
+                      <Product key={item.id}>
+                        <ProductTitle>
+                          {`${format(new Date(item.data), 'dd/MM/yyyy')} às ${
+                            item.hora
+                          }`}
+                        </ProductTitle>
+                        <DescriptionContainer>
+                          <Description>{`Valor total: R$ ${item.valortotal},00`}</Description>
+                        </DescriptionContainer>
+                        <PriceContainer>
+                          {item.status === 'Pendente' ? (
+                            <>
+                              <StatusContainer>
+                                <ProductPrice>{item.status}</ProductPrice>
+                                <ProductCancel
+                                  onPress={() => handleCancel(item)}
+                                >
+                                  <ProductPrice style={{ color: '#D91818' }}>
+                                    Cancelar
+                                  </ProductPrice>
+                                </ProductCancel>
+                              </StatusContainer>
+                            </>
+                          ) : (
+                            <ProductStatus>
+                              {item.status === 'Em Andamento' ? (
+                                <ProductNameStatus style={{ color: '#282828' }}>
+                                  {item.status}
+                                </ProductNameStatus>
+                              ) : item.status === 'Cancelado' ? (
+                                <ProductPrice style={{ color: '#D91818' }}>
+                                  {item.status}
+                                </ProductPrice>
+                              ) : (
+                                <ProductPrice>{item.status}</ProductPrice>
+                              )}
+                            </ProductStatus>
+                          )}
+
+                          <ProductButton onPress={handleDetails}>
+                            <Icon size={30} name="arrow-right" color="#000" />
+                          </ProductButton>
+                        </PriceContainer>
+                      </Product>
+                    );
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <CartClean>
+                  <CartCleanContainerTitle>
+                    <CartCleanTitle>Nenhum pedido encontrado :|</CartCleanTitle>
+                  </CartCleanContainerTitle>
+                </CartClean>
+              </>
+            )}
+          </SafeAreaView>
+        </ProductContainer>
+      </Container>
+      <Navigation />
     </>
   );
 };
 
-export default Pedidos;
+export default Dashboard;

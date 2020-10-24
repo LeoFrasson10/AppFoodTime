@@ -190,7 +190,7 @@ const Cart: React.FC = () => {
               <>
                 <ProductList
                   data={itens}
-                  keyExtractor={item => item.id}
+                  keyExtractor={(item, index) => index.toString()}
                   ListFooterComponent={<View />}
                   renderItem={({ item }: { item: Itens }) => (
                     <Product>

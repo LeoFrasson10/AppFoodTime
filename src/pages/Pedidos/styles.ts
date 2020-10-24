@@ -1,10 +1,38 @@
 import styled from 'styled-components/native';
-import { FlatList, TextInput } from 'react-native';
+import { FlatList } from 'react-native';
+import { Pedido } from './index';
 
-export const Container = styled.SafeAreaView`
+export const Container = styled.View`
   flex: 1;
-  align-items: center;
-  margin-top: 5%;
+`;
+
+export const Header = styled.View`
+  height: 120px;
+  background-color: #282828;
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+
+  flex-direction: row;
+`;
+
+export const Text = styled.Text`
+  font-family: 'Poppins-Bold';
+  color: #fff;
+  font-size: 25px;
+`;
+
+export const ContainerMain = styled.View`
+  margin: auto;
+
+  top: 35px;
+`;
+
+export const Title = styled.Text`
+  text-align: center;
+  font-family: 'Poppins-Bold';
+  color: #fff;
+  font-size: 22px;
+  margin-bottom: 10px;
 `;
 
 export const ProductContainer = styled.View`
@@ -16,6 +44,7 @@ export const ProductContainer = styled.View`
 
 export const ProductList = styled.View`
   flex: 1;
+
   padding: 0 20px;
 `;
 
@@ -29,6 +58,8 @@ export const Product = styled.View`
 
 export const ProductTitle = styled.Text`
   font-size: 18px;
+  text-align: center;
+  margin-left: -30px;
   font-family: 'Poppins-Bold';
 `;
 
@@ -40,7 +71,22 @@ export const PriceContainer = styled.View`
   margin-top: auto;
 `;
 
+export const StatusContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  margin: auto;
+`;
+
 export const ProductPrice = styled.Text`
+  font-family: 'Poppins-Bold';
+  font-size: 18px;
+  color: #f49328;
+  margin-right: 10px;
+`;
+
+export const ProductNameStatus = styled.Text`
   font-family: 'Poppins-Bold';
   font-size: 18px;
   color: #000;
@@ -48,6 +94,13 @@ export const ProductPrice = styled.Text`
 
 export const ProductButton = styled.TouchableOpacity`
   margin-top: -60px;
+`;
+export const ProductCancel = styled.TouchableOpacity`
+  margin: auto;
+  padding: 2px;
+`;
+export const ProductStatus = styled.TouchableOpacity`
+  margin: auto;
 `;
 
 export const DescriptionContainer = styled.View`
@@ -58,47 +111,34 @@ export const DescriptionContainer = styled.View`
   width: 90%;
 `;
 
-export const Search = styled.TouchableOpacity`
-  margin-top: -50px;
-  margin-bottom: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  font-family: 'Poppins-Bold';
-  font-size: 14px;
-  background-color: #f49328;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  padding: 8px;
-`;
-
-export const TextTodos = styled.Text`
-  font-family: 'Poppins-Bold';
-  color: #fff;
-  font-size: 20px;
-`;
-
 export const Description = styled.Text`
   font-family: 'Poppins-Regular';
+  margin: auto;
 `;
-export const ItensList = styled(FlatList as new () => FlatList<Itens>)``;
+export const ItensList = styled(FlatList as new () => FlatList<Pedido>)``;
 
-export const Finish = styled.TouchableOpacity`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: #f42828;
-  border-top-width: 0px;
-  padding: 16px 0;
-  justify-content: center;
-  align-items: center;
+export const CartClean = styled.View`
+  background: #fff;
+  padding: 15px 10px;
+  border-radius: 5px;
+  width: 90%;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
   flex-direction: row;
 `;
 
-export const FinishText = styled.Text`
-  font-size: 18px;
-  color: #fff;
+export const CartCleanContainerTitle = styled.View`
+  font-size: 16px;
+  margin-left: 5px;
+  height: 80px;
+  margin: auto;
+`;
+
+export const CartCleanTitle = styled.Text`
+  font-size: 20px;
+  text-align: center;
   font-weight: bold;
+  margin: auto;
+  color: #000;
 `;
