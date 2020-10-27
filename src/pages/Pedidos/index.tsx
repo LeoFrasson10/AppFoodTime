@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Image, ToastAndroid } from 'react-native';
+import { Image, ToastAndroid, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -54,15 +54,18 @@ const Dashboard: React.FC = () => {
   // const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [cancelado, setCancelado] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const loadUser = useCallback(async () => {
     const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
+    setLoading(true);
     if (userDados) {
       const { id } = JSON.parse(userDados)[0];
 
       try {
         const valor = await api.get(`/pedido/${id}`);
         setPedidos(valor.data);
+        setLoading(false);
       } catch {
         console.log('erro');
       }
@@ -81,7 +84,16 @@ const Dashboard: React.FC = () => {
 
   async function handleCancel(item: Pedido): Promise<void> {
     try {
-      const cancel = await api.get(`/cancelarUser/${item.id}`);
+      await api.get(`/cancelarUser/${item.id}`);
+      const attPedido = pedidos.map(ped => {
+        if (ped.id === item.id) {
+          // eslint-disable-next-line no-param-reassign
+          ped.status = 'Cancelado';
+        }
+        return ped;
+      });
+      setPedidos([]);
+      setPedidos(attPedido);
     } catch {
       console.log('erro');
     }
@@ -101,21 +113,23 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
+      <Header style={{ justifyContent: 'flex-start' }}>
+        <ContainerMain>
+          <Text>Meus Pedidos</Text>
+        </ContainerMain>
+      </Header>
       <Container>
-        <Header style={{ justifyContent: 'flex-start' }}>
-          <ContainerMain>
-            <Text>Meus Pedidos</Text>
-          </ContainerMain>
-        </Header>
-
         <ProductContainer>
           <SafeAreaView style={{ flex: 1 }}>
-            {pedidos.length > 0 ? (
+            {loading ? (
+              <ActivityIndicator size="large" color="#fff" />
+            ) : pedidos.length > 0 ? (
               <>
                 <ItensList
                   data={pedidos}
                   keyExtractor={(item, index) => index.toString()}
-                  renderItem={({ item }: { item: Pedido }) => {
+                  initialNumToRender={pedidos.length}
+                  renderItem={({ item }) => {
                     return (
                       <Product key={item.id}>
                         <ProductTitle>

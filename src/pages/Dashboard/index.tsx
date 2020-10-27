@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 // import { FormHandles } from '@unform/core';
 
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 import {
   Container,
   Text,
@@ -74,7 +75,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     loadItens();
-  }, [loadItens]);
+  }, []);
 
   function handleAddToCart(item: Itens): void {
     if (user) {
@@ -152,6 +153,7 @@ const Dashboard: React.FC = () => {
           <ItensList
             data={itens}
             keyExtractor={(item, index) => index.toString()}
+            initialNumToRender={itens.length}
             renderItem={({ item }) => {
               return (
                 <Product key={item.id}>

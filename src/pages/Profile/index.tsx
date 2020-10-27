@@ -77,7 +77,7 @@ const Profile: React.FC = () => {
   // eslint-disable-next-line no-console
   // console.log(userData[0].nome);
   // eslint-disable-next-line no-console
-  console.log(userData);
+
   return (
     <>
       <KeyboardAvoidingView

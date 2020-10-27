@@ -49,16 +49,6 @@ const AuthRoutes: React.FC = () => (
       name="Cart"
       component={Cart}
     />
-    <Auth.Screen
-      options={{
-        headerShown: true,
-        headerTransparent: true,
-        cardStyle: { backgroundColor: '#282828' },
-        headerTitle: () => <Image source={Logo} />,
-      }}
-      name="Pedidos"
-      component={Pedidos}
-    />
   </Auth.Navigator>
 );
 
