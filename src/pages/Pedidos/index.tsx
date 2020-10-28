@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-indent */
+/* eslint-disable camelcase */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Image, ToastAndroid, ActivityIndicator, View } from 'react-native';
@@ -10,9 +12,11 @@ import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-navigation';
+import { ScrollView } from 'react-native-gesture-handler';
 import {
   Container,
   Text,
+  TextDesc,
   Header,
   ContainerMain,
   Product,
@@ -33,6 +37,11 @@ import {
   CartCleanTitle,
   ButtonFechar,
   TextFechar,
+  ContainerModal,
+  TextTituloDesc,
+  TextTituloNumeroPedido,
+  TextTituloDescNumero,
+  TextTituloDescTotal,
 } from './styles';
 
 import Navigation from '../../components/Navigation';
@@ -59,13 +68,13 @@ export interface InfoPedido {
   valortotal: string;
   detalhe: Array<{
     id: number;
-    pedidosId: number;
-    itemId: number;
-    qtd: number;
+    pedidos_id: number;
+    itens_id: number;
+    quantidade: number;
     preco: number;
   }>;
   itens: Array<{
-    id: string;
+    id: number;
     titulo: string;
     descritivo: string;
   }>;
@@ -76,7 +85,7 @@ const Dashboard: React.FC = () => {
 
   // const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
-  const [detalhePed, setDetalhePed] = useState<InfoPedido>();
+  const [detalhePed, setDetalhePed] = useState<InfoPedido>('');
   const [cancelado, setCancelado] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -104,7 +113,7 @@ const Dashboard: React.FC = () => {
     loadUser();
   }, [loadUser]);
 
-  async function handleDetails(item: Pedido): Promise<void> {
+  async function handleDetails(item: InfoPedido): Promise<void> {
     const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
 
     if (userDados) {
@@ -114,8 +123,7 @@ const Dashboard: React.FC = () => {
         const data = await api.get(`/pedido/${id}/${item.id}`);
         setModalVisible(!isModalVisible);
         if (data) {
-          setDetalhePed(JSON.stringify(data.data));
-          console.log(detalhePed);
+          setDetalhePed(data.data);
         } else {
           console.log('vazio');
         }
@@ -174,13 +182,35 @@ const Dashboard: React.FC = () => {
         <Modal isVisible={isModalVisible}>
           <View
             style={{
-              flex: 0.5,
               backgroundColor: '#fff',
               borderRadius: 10,
               padding: 20,
             }}
           >
-            <Text>Hello!</Text>
+            <ContainerModal>
+              <TextTituloDescNumero>
+                {` Pedido: #${detalhePed ? detalhePed.id : ''}`}
+              </TextTituloDescNumero>
+              {detalhePed ? (
+                detalhePed.detalhe[0].itens_id === detalhePed.itens[0].id ? (
+                  detalhePed.itens.map((d, i) => (
+                    <>
+                      <TextTituloDesc>{`${d.titulo} | ${detalhePed.detalhe[i].quantidade} x R$ ${detalhePed.detalhe[i].preco},00`}</TextTituloDesc>
+                      <TextDesc>{`${d.descritivo}`}</TextDesc>
+                    </>
+                  ))
+                ) : (
+                  <TextDesc>Vazio</TextDesc>
+                )
+              ) : (
+                <TextDesc>Erro</TextDesc>
+              )}
+              <TextTituloDescTotal>
+                {` Valor total: R$ ${
+                  detalhePed ? detalhePed.valortotal : ''
+                },00`}
+              </TextTituloDescTotal>
+            </ContainerModal>
 
             <ButtonFechar onPress={handleFecharModal}>
               <TextFechar>Fechar</TextFechar>
@@ -207,6 +237,9 @@ const Dashboard: React.FC = () => {
                   renderItem={({ item }) => {
                     return (
                       <Product key={item.id}>
+                        <TextTituloNumeroPedido>
+                          {` Pedido: #${item.id}`}
+                        </TextTituloNumeroPedido>
                         <ProductTitle>
                           {`${format(new Date(item.data), 'dd/MM/yyyy')} às ${
                             item.hora
@@ -223,7 +256,7 @@ const Dashboard: React.FC = () => {
                                 <ProductCancel
                                   onPress={() => handleCancel(item)}
                                 >
-                                  <ProductPrice style={{ color: '#D91818' }}>
+                                  <ProductPrice style={{ color: '#d91818' }}>
                                     Cancelar
                                   </ProductPrice>
                                 </ProductCancel>

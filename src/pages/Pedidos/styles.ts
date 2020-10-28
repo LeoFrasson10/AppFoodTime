@@ -22,6 +22,50 @@ export const Text = styled.Text`
   font-size: 25px;
 `;
 
+export const TextDesc = styled.Text`
+  font-family: 'Poppins-Regular';
+  color: #000;
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-align: justify;
+  border-bottom-width: 1px;
+  border-color: #dcdcdc;
+`;
+
+export const TextTituloDesc = styled.Text`
+  font-family: 'Poppins-Bold';
+  color: #000;
+  font-size: 16px;
+`;
+
+export const TextTituloDescTotal = styled.Text`
+  font-family: 'Poppins-Bold';
+
+  color: #000;
+  text-align: center;
+  font-size: 18px;
+`;
+
+export const TextTituloDescNumero = styled.Text`
+  font-family: 'Poppins-Bold';
+  color: #000;
+  border-bottom-width: 1px;
+
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 10px;
+`;
+
+export const TextTituloNumeroPedido = styled.Text`
+  font-family: 'Poppins-Bold';
+  color: #000;
+  font-size: 16px;
+`;
+
+export const ContainerModal = styled.View`
+  margin-bottom: 50px;
+`;
+
 export const ContainerMain = styled.View`
   margin: auto;
 
@@ -51,7 +95,7 @@ export const ProductList = styled.View`
 
 export const Product = styled.View`
   background: #fff;
-  padding: 16px 16px;
+  padding: 20px
   border-radius: 10px;
   margin: 8px;
   flex: 1;
@@ -59,8 +103,7 @@ export const Product = styled.View`
 
 export const ProductTitle = styled.Text`
   font-size: 18px;
-  text-align: center;
-  margin-left: -30px;
+
   font-family: 'Poppins-Bold';
 `;
 
@@ -106,15 +149,14 @@ export const ProductStatus = styled.TouchableOpacity`
 
 export const DescriptionContainer = styled.View`
   flex-direction: row;
-  align-items: center;
+
   margin-top: auto;
 
-  width: 90%;
+  width: 100%;
 `;
 
 export const Description = styled.Text`
   font-family: 'Poppins-Regular';
-  margin: auto;
 `;
 export const ItensList = styled(FlatList as new () => FlatList<Pedido>)``;
 
@@ -122,7 +164,7 @@ export const CartClean = styled.View`
   background: #fff;
   padding: 15px 10px;
   border-radius: 5px;
-  width: 90%;
+  width: 100%;
   margin-top: 10px;
   margin-left: auto;
   margin-right: auto;
@@ -131,7 +173,7 @@ export const CartClean = styled.View`
 
 export const CartCleanContainerTitle = styled.View`
   font-size: 16px;
-  margin-left: 5px;
+
   height: 80px;
   margin: auto;
 `;
@@ -143,13 +185,18 @@ export const CartCleanTitle = styled.Text`
   margin: auto;
   color: #000;
 `;
+export const DescritivoItem = styled.Text`
+  font-family: 'Poppins-Bold';
+  color: #fff;
+  font-size: 25px;
+`;
 
 export const ButtonFechar = styled.TouchableOpacity`
   position: absolute;
   left: 0;
   bottom: 0;
   right: 0;
-  background: #f42828;
+  background: #d91818;
   border-top-width: 0px;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
