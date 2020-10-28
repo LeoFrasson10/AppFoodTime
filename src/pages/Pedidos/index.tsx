@@ -189,7 +189,7 @@ const Dashboard: React.FC = () => {
           >
             <ContainerModal>
               <TextTituloDescNumero>
-                {` Pedido: #${detalhePed ? detalhePed.id : ''}`}
+                {` Pedido #${detalhePed ? detalhePed.id : ''}`}
               </TextTituloDescNumero>
               {detalhePed ? (
                 detalhePed.detalhe[0].itens_id === detalhePed.itens[0].id ? (
@@ -238,7 +238,7 @@ const Dashboard: React.FC = () => {
                     return (
                       <Product key={item.id}>
                         <TextTituloNumeroPedido>
-                          {` Pedido: #${item.id}`}
+                          {` Pedido #${item.id}`}
                         </TextTituloNumeroPedido>
                         <ProductTitle>
                           {`${format(new Date(item.data), 'dd/MM/yyyy')} às ${
