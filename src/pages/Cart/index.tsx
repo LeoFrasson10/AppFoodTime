@@ -39,6 +39,7 @@ import {
 import FloatingCart from '../../components/FloatingCart';
 import { useCart } from '../../hooks/cart';
 import { useAuth } from '../../hooks/auth';
+import Navigation from '../../components/Navigation';
 
 export interface Itens {
   id: string;
@@ -266,6 +267,7 @@ const Cart: React.FC = () => {
       >
         <FinishText>Finalizar pedido</FinishText>
       </Finish>
+      <Navigation />
     </>
   );
 };

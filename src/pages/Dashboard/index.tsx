@@ -62,7 +62,6 @@ const Dashboard: React.FC = () => {
 
   const loadItens = useCallback(async () => {
     const valor = await api.get('/');
-
     setItens([]);
     setItens(valor.data);
   }, [setItens]);
@@ -75,7 +74,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     loadItens();
-  }, []);
+  }, [loadItens]);
 
   function handleAddToCart(item: Itens): void {
     if (user) {

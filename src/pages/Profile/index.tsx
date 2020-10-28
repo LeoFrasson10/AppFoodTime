@@ -31,6 +31,8 @@ import {
   Value,
   ObsAlterDados,
 } from './styles';
+import formatPhone from '../../utils/FormatPhone';
+import formatCPf from '../../utils/FormatCPF';
 
 interface User {
   nome: string;
@@ -106,11 +108,17 @@ const Profile: React.FC = () => {
             </Campo>
             <Campo>
               <Icon name="smartphone" size={24} />
-              <Value>{userData.length > 0 ? userData[0].numero : ''}</Value>
+              <Value>
+                {userData.length > 0
+                  ? formatPhone(String(userData[0].numero))
+                  : ''}
+              </Value>
             </Campo>
             <Campo>
               <Icon name="archive" size={24} />
-              <Value>{userData.length > 0 ? userData[0].cpf : ''}</Value>
+              <Value>
+                {userData.length > 0 ? formatCPf(String(userData[0].cpf)) : ''}
+              </Value>
             </Campo>
             <ObsAlterDados>
               *Para alterar seus dados acessar o site www.foodtime.com.br
