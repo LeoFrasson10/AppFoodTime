@@ -2,7 +2,7 @@ import styled from 'styled-components/native';
 
 export const Container = styled.View`
   position: absolute;
-  bottom: 52px;
+  bottom: 100;
 
   flex-direction: row;
   background: #f49328;
@@ -25,8 +25,7 @@ export const CartTotalPrice = styled.Text`
 export const CartButton = styled.TouchableOpacity`
   flex-direction: row;
   background: #f49328;
-
-  flex: 1;
+ flex: 1;
   padding: 20px 20px;
   justify-content: space-between;
   align-items: center;

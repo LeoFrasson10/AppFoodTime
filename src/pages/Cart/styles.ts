@@ -24,7 +24,7 @@ export const ProductList = styled(FlatList)`
 export const ContainerObs = styled.View`
   margin-left: 20px;
   margin-right: 20px;
-  margin-bottom: 130px;
+  margin-bottom: 165px;
 `;
 
 export const Product = styled.View`
@@ -129,7 +129,7 @@ export const CartCleanTitle = styled.Text`
 export const Finish = styled(RectButton)`
   position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: 50;
   right: 0;
   background: #f42828;
   border-top-width: 0px;
