@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Image, ToastAndroid, ActivityIndicator } from 'react-native';
+import { Image, ToastAndroid, ActivityIndicator, View } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
-
+import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-navigation';
 import {
   Container,
@@ -31,6 +31,8 @@ import {
   CartClean,
   CartCleanContainerTitle,
   CartCleanTitle,
+  ButtonFechar,
+  TextFechar,
 } from './styles';
 
 import Navigation from '../../components/Navigation';
@@ -39,6 +41,7 @@ import { useAuth } from '../../hooks/auth';
 import { useCart } from '../../hooks/cart';
 // import Input from '../../components/Input';
 import api from '../../services/api';
+import Button from '../../components/Button';
 
 export interface Pedido {
   id: string;
@@ -48,13 +51,36 @@ export interface Pedido {
   valortotal: string;
 }
 
+export interface InfoPedido {
+  id: number;
+  data: string;
+  hora: string;
+  status: string;
+  valortotal: string;
+  detalhe: Array<{
+    id: number;
+    pedidosId: number;
+    itemId: number;
+    qtd: number;
+    preco: number;
+  }>;
+  itens: Array<{
+    id: string;
+    titulo: string;
+    descritivo: string;
+  }>;
+}
+
 const Dashboard: React.FC = () => {
   // const formRef = useRef<FormHandles>();
 
   // const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [detalhePed, setDetalhePed] = useState<InfoPedido>();
   const [cancelado, setCancelado] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const loadUser = useCallback(async () => {
     const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
@@ -78,9 +104,40 @@ const Dashboard: React.FC = () => {
     loadUser();
   }, [loadUser]);
 
-  const handleDetails = useCallback(() => {
-    console.log('detalhe');
-  }, []);
+  async function handleDetails(item: Pedido): Promise<void> {
+    const userDados = await AsyncStorage.getItem('@Foodtime:userDados');
+
+    if (userDados) {
+      const { id } = JSON.parse(userDados)[0];
+
+      try {
+        const data = await api.get(`/pedido/${id}/${item.id}`);
+        setModalVisible(!isModalVisible);
+        if (data) {
+          setDetalhePed(JSON.stringify(data.data));
+          console.log(detalhePed);
+        } else {
+          console.log('vazio');
+        }
+        // await api.get(`/cancelarUser/${item.id}`);
+        // const attPedido = pedidos.map(ped => {
+        //   if (ped.id === item.id) {
+        //     // eslint-disable-next-line no-param-reassign
+        //     ped.status = 'Cancelado';
+        //   }
+        //   return ped;
+        // });
+        // setPedidos([]);
+        // setPedidos(attPedido);
+      } catch {
+        console.log('erro');
+      }
+    }
+  }
+
+  const handleFecharModal = useCallback(() => {
+    setModalVisible(!isModalVisible);
+  }, [isModalVisible]);
 
   async function handleCancel(item: Pedido): Promise<void> {
     try {
@@ -113,6 +170,24 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
+      <View>
+        <Modal isVisible={isModalVisible}>
+          <View
+            style={{
+              flex: 0.5,
+              backgroundColor: '#fff',
+              borderRadius: 10,
+              padding: 20,
+            }}
+          >
+            <Text>Hello!</Text>
+
+            <ButtonFechar onPress={handleFecharModal}>
+              <TextFechar>Fechar</TextFechar>
+            </ButtonFechar>
+          </View>
+        </Modal>
+      </View>
       <Header style={{ justifyContent: 'flex-start' }}>
         <ContainerMain>
           <Text>Meus Pedidos</Text>
@@ -170,7 +245,7 @@ const Dashboard: React.FC = () => {
                             </ProductStatus>
                           )}
 
-                          <ProductButton onPress={handleDetails}>
+                          <ProductButton onPress={() => handleDetails(item)}>
                             <Icon size={30} name="arrow-right" color="#000" />
                           </ProductButton>
                         </PriceContainer>
@@ -183,7 +258,7 @@ const Dashboard: React.FC = () => {
               <>
                 <CartClean>
                   <CartCleanContainerTitle>
-                    <CartCleanTitle>Nenhum pedido encontrado :|</CartCleanTitle>
+                    <CartCleanTitle>Nenhum pedido encontrado :(</CartCleanTitle>
                   </CartCleanContainerTitle>
                 </CartClean>
               </>

@@ -1,5 +1,6 @@
 import styled from 'styled-components/native';
-import { FlatList } from 'react-native';
+import { FlatList, Button } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
 import { Pedido } from './index';
 
 export const Container = styled.View`
@@ -141,4 +142,27 @@ export const CartCleanTitle = styled.Text`
   font-weight: bold;
   margin: auto;
   color: #000;
+`;
+
+export const ButtonFechar = styled.TouchableOpacity`
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: #f42828;
+  border-top-width: 0px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 16px 0;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+
+export const TextFechar = styled.Text`
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  margin: auto;
+  color: #fff;
 `;
