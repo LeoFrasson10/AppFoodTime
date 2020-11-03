@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Image, ToastAndroid, LogBox } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import Icone from 'react-native-vector-icons/FontAwesome';
 
 // import { FormHandles } from '@unform/core';
 
@@ -136,7 +137,7 @@ const Dashboard: React.FC = () => {
             </Category>
             <Category onPress={handlePastel}>
               <Image source={past} />
-              <CategoryText>Pastéris</CategoryText>
+              <CategoryText>Pastéis</CategoryText>
             </Category>
             <Category onPress={handleBebida}>
               <Image source={beer} />
@@ -164,6 +165,7 @@ const Dashboard: React.FC = () => {
                     <ProductPrice>{`R$ ${item.preco},00`}</ProductPrice>
                     <ProductButton onPress={() => handleAddToCart(item)}>
                       <Icon size={30} name="plus" color="#000" />
+                      {/* <Icon size={30} name="shopping-cart" color="#000" /> */}
                     </ProductButton>
                   </PriceContainer>
                 </Product>

@@ -11,6 +11,7 @@ import Dashboard from '../pages/Dashboard';
 import Cart from '../pages/Cart';
 import Profile from '../pages/Profile';
 import Pedidos from '../pages/Pedidos';
+import PedidoSuccess from '../pages/PedidoSuccess';
 
 const App = createStackNavigator();
 
@@ -57,6 +58,7 @@ const AppRoutes: React.FC = () => (
       name="Pedidos"
       component={Pedidos}
     />
+    <App.Screen name="PedidoSuccess" component={PedidoSuccess} />
   </App.Navigator>
 );
 

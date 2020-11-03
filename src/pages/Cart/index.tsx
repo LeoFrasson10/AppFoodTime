@@ -144,20 +144,21 @@ const Cart: React.FC = () => {
               //   ToastAndroid.SHORT,
               //   ToastAndroid.BOTTOM,
               // );
-              Alert.alert(
-                'Pedido realizado com sucesso!',
-                'O que deseja fazer?',
-                [
-                  {
-                    text: 'Ver pedidos',
-                    onPress: () => navigation.navigate('Pedidos'),
-                  },
-                  {
-                    text: 'Ir para o início',
-                    onPress: () => navigation.navigate('Dashboard'),
-                  },
-                ],
-              );
+              // Alert.alert(
+              //   'Pedido realizado com sucesso!',
+              //   'O que deseja fazer?',
+              //   [
+              //     {
+              //       text: 'Ver pedidos',
+              //       onPress: () => navigation.navigate('Pedidos'),
+              //     },
+              //     {
+              //       text: 'Ir para o início',
+              //       onPress: () => navigation.navigate('Dashboard'),
+              //     },
+              //   ],
+              // );
+              navigation.navigate('PedidoSuccess');
               clean();
             }
 

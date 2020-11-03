@@ -38,6 +38,16 @@ export const TextTituloDesc = styled.Text`
   font-size: 16px;
 `;
 
+export const TextObservacao = styled.Text`
+  font-family: 'Poppins-Bold';
+  color: #000;
+  font-size: 16px;
+  margin-bottom: 10px;
+  text-align: justify;
+  border-bottom-width: 1px;
+  border-color: #dcdcdc;
+`;
+
 export const TextTituloDescTotal = styled.Text`
   font-family: 'Poppins-Bold';
 

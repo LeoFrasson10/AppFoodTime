@@ -42,6 +42,7 @@ import {
   TextTituloNumeroPedido,
   TextTituloDescNumero,
   TextTituloDescTotal,
+  TextObservacao,
 } from './styles';
 
 import Navigation from '../../components/Navigation';
@@ -66,6 +67,7 @@ export interface InfoPedido {
   hora: string;
   status: string;
   valortotal: string;
+  observacao: string;
   detalhe: Array<{
     id: number;
     pedidos_id: number;
@@ -205,6 +207,9 @@ const Dashboard: React.FC = () => {
               ) : (
                 <TextDesc>Erro</TextDesc>
               )}
+              <TextObservacao>
+                {`Observação: ${detalhePed ? detalhePed.observacao : ''}`}
+              </TextObservacao>
               <TextTituloDescTotal>
                 {` Valor total: R$ ${
                   detalhePed ? detalhePed.valortotal : ''
