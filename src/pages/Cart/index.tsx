@@ -2,13 +2,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import { View, ToastAndroid, Alert } from 'react-native';
+import { View, ToastAndroid, Alert, Text } from 'react-native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation } from '@react-navigation/native';
-
+import { Picker } from '@react-native-picker/picker';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-navigation';
 import api from '../../services/api';
@@ -62,6 +62,11 @@ interface Observacao {
   observacao?: string;
 }
 
+interface FormaPagemento {
+  id: number;
+  descritivo: string;
+}
+
 const Cart: React.FC = () => {
   // const [itensData, setItensData] = useState<Itens[]>([]);
   const { increment, decrement, itens, clean } = useCart();
@@ -71,6 +76,8 @@ const Cart: React.FC = () => {
 
   const [dadosUser, setDadosUser] = useState<User[]>([]);
   const [itensCart, setItensCart] = useState<Itens[]>([]);
+  const [teste, setTeste] = useState(0);
+  const [formaPagamento, setFormaPagamento] = useState(0);
   const [obs, setObs] = useState('Nenhuma');
 
   function handleIncrement(id: string): void {
@@ -80,6 +87,12 @@ const Cart: React.FC = () => {
   function handleDecrement(id: string): void {
     decrement(id);
   }
+
+  // const loadFormaPagamento = useCallback(async () => {
+  //   const data = await api.get('formaPagamento');
+
+  //   setFormaPagamento(data.data);
+  // }, []);
 
   useEffect(() => {
     async function loadItensData(): Promise<void> {
@@ -126,42 +139,50 @@ const Cart: React.FC = () => {
 
         if (Number(valorCart) !== 0) {
           try {
-            const response = await api.post('pedido', {
-              user_id: dadosUser[0].id,
-              valortotal: valorCart,
-              observacao: obs,
-              itens: itensCart.map(i => {
-                return {
-                  itens_id: i.id,
-                  quantidade: i.quantity,
-                  preco: i.preco,
-                };
-              }),
-            });
-            if (response) {
-              // ToastAndroid.showWithGravity(
-              //   'Pedido realizado',
-              //   ToastAndroid.SHORT,
-              //   ToastAndroid.BOTTOM,
-              // );
-              // Alert.alert(
-              //   'Pedido realizado com sucesso!',
-              //   'O que deseja fazer?',
-              //   [
-              //     {
-              //       text: 'Ver pedidos',
-              //       onPress: () => navigation.navigate('Pedidos'),
-              //     },
-              //     {
-              //       text: 'Ir para o início',
-              //       onPress: () => navigation.navigate('Dashboard'),
-              //     },
-              //   ],
-              // );
-              navigation.navigate('PedidoSuccess');
-              clean();
+            if (formaPagamento !== 0) {
+              const response = await api.post('pedido', {
+                user_id: dadosUser[0].id,
+                formapagamento: formaPagamento,
+                valortotal: valorCart,
+                observacao: obs,
+                itens: itensCart.map(i => {
+                  return {
+                    itens_id: i.id,
+                    quantidade: i.quantity,
+                    preco: i.preco,
+                  };
+                }),
+              });
+              if (response) {
+                // ToastAndroid.showWithGravity(
+                //   'Pedido realizado',
+                //   ToastAndroid.SHORT,
+                //   ToastAndroid.BOTTOM,
+                // );
+                // Alert.alert(
+                //   'Pedido realizado com sucesso!',
+                //   'O que deseja fazer?',
+                //   [
+                //     {
+                //       text: 'Ver pedidos',
+                //       onPress: () => navigation.navigate('Pedidos'),
+                //     },
+                //     {
+                //       text: 'Ir para o início',
+                //       onPress: () => navigation.navigate('Dashboard'),
+                //     },
+                //   ],
+                // );
+                navigation.navigate('PedidoSuccess');
+                clean();
+              }
+            } else {
+              ToastAndroid.showWithGravity(
+                'Selecione a forma de pagamento',
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM,
+              );
             }
-
             // await AsyncStorage.multiRemove([
             //   '@Foodtime:cartTotal',
             //   '@Foodtime:itens',
@@ -180,8 +201,13 @@ const Cart: React.FC = () => {
         //
       }
     },
-    [itensCart, dadosUser, obs, clean, navigation],
+    [itensCart, dadosUser, obs, clean, navigation, formaPagamento],
   );
+
+  const handleFormaPagamento = useCallback(itemValue => {
+    console.log(itemValue);
+    setFormaPagamento(itemValue);
+  }, []);
 
   return (
     <>
@@ -237,6 +263,28 @@ const Cart: React.FC = () => {
                       placeholder="Alguma observação?"
                       returnKeyType="next"
                     />
+                    <Text style={{ color: '#fff', fontSize: 16 }}>
+                      Qual a forma de pagamento?
+                    </Text>
+                    <Picker
+                      mode="dropdown"
+                      selectedValue={formaPagamento}
+                      style={{
+                        height: 50,
+                        width: '100%',
+                        backgroundColor: '#fff',
+                        color: '#000',
+                        marginBottom: 10,
+                        marginTop: 10,
+                      }}
+                      onValueChange={itemValue =>
+                        handleFormaPagamento(itemValue)}
+                    >
+                      <Picker.Item label="" value={0} />
+                      <Picker.Item label="Dinheiro" value={1} />
+                      <Picker.Item label="Cartão de Crédito" value={2} />
+                      <Picker.Item label="Cartão de Débito" value={3} />
+                    </Picker>
                   </ContainerObs>
                 </Form>
               </>
@@ -268,7 +316,6 @@ const Cart: React.FC = () => {
       >
         <FinishText>Finalizar pedido</FinishText>
       </Finish>
-      <Navigation />
     </>
   );
 };
