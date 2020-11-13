@@ -154,7 +154,7 @@ const Dashboard: React.FC = () => {
             data={itens}
             keyExtractor={(item, index) => index.toString()}
             initialNumToRender={itens.length}
-            renderItem={({ item }) => {
+            renderItem={({ item }: { item: Itens }) => {
               return (
                 <Product key={item.id}>
                   <ProductTitle>{item.titulo}</ProductTitle>

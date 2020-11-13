@@ -8,6 +8,7 @@ import {
   TextInput,
   Alert,
   ToastAndroid,
+  Text,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Feather';

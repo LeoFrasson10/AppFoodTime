@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   TextInput,
+  ToastAndroid,
   Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
@@ -17,7 +18,7 @@ import * as Yup from 'yup';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import logoImg from '../../assets/logo_maior.png';
-
+import { useAuth } from '../../hooks/auth';
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import api from '../../services/api';
@@ -36,12 +37,13 @@ interface SignUpFormData {
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>();
   const navigation = useNavigation();
-
+  const { signIn } = useAuth();
   const surnameInputRef = useRef<TextInput>(null);
   const emailInputRef = useRef<TextInput>(null);
   const phoneInputRef = useRef<TextInput>(null);
   const documentInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
+  const confirmPasswordInputRef = useRef<TextInput>(null);
 
   const handleSignUp = useCallback(
     async (data: SignUpFormData) => {
@@ -58,6 +60,10 @@ const SignIn: React.FC = () => {
           numero: Yup.number().required('Celular obrigatório').integer(),
           cpf: Yup.number().required('Cpf obrigatório').integer(),
           password: Yup.string().min(6, 'No minimo 6 digitos'),
+          passwordConfirmation: Yup.string().oneOf(
+            [Yup.ref('password')],
+            'Senhas não conferem',
+          ),
         });
         const userCpf = data.cpf;
 
@@ -68,13 +74,24 @@ const SignIn: React.FC = () => {
             abortEarly: false,
           });
 
-          await api.post('/register', data);
+          const response = await api.post('/register', data);
 
-          Alert.alert(
-            'Cadastro realizado com sucesso!',
-            'Você já pode fazer login na aplicação',
-          );
-          navigation.goBack();
+          if (response.data) {
+            await signIn({
+              email: data.email,
+              password: data.password,
+            });
+            ToastAndroid.showWithGravity(
+              'Cadastro realizado com sucesso! Bem vindo!!',
+              ToastAndroid.SHORT,
+              ToastAndroid.BOTTOM,
+            );
+          }
+          // Alert.alert(
+          //   'Cadastro realizado com sucesso!',
+          //   'Você já pode fazer login na aplicação',
+          // );
+          // navigation.goBack();
         } else {
           Alert.alert('CPF inválido', 'Insira um CPF válido');
         }
@@ -82,7 +99,11 @@ const SignIn: React.FC = () => {
         if (err instanceof Yup.ValidationError) {
           console.log(err);
           const errors = getValidationErrors(err);
-
+          ToastAndroid.showWithGravity(
+            err.message,
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER,
+          );
           // eslint-disable-next-line no-unused-expressions
           formRef.current?.setErrors(errors);
 
@@ -175,6 +196,19 @@ const SignIn: React.FC = () => {
                 name="password"
                 icon="lock"
                 placeholder="Senha"
+                textContentType="newPassword"
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  // eslint-disable-next-line no-unused-expressions
+                  confirmPasswordInputRef.current?.focus();
+                }}
+              />
+              <Input
+                ref={confirmPasswordInputRef}
+                secureTextEntry
+                name="passwordConfirmation"
+                icon="lock"
+                placeholder="Confirmar senha"
                 textContentType="newPassword"
                 returnKeyType="send"
                 onSubmitEditing={() => {

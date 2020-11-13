@@ -12,6 +12,7 @@ import Cart from '../pages/Cart';
 import Profile from '../pages/Profile';
 import Pedidos from '../pages/Pedidos';
 import PedidoSuccess from '../pages/PedidoSuccess';
+import Empresa from '../pages/Empresa';
 
 const App = createStackNavigator();
 
@@ -59,6 +60,7 @@ const AppRoutes: React.FC = () => (
       component={Pedidos}
     />
     <App.Screen name="PedidoSuccess" component={PedidoSuccess} />
+    <App.Screen name="Empresa" component={Empresa} />
   </App.Navigator>
 );
 

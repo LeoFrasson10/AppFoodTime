@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://192.168.2.104/foodtime/public/api/',
+  baseURL: 'http://54.207.143.151/api/',
 });
 
 export default api;
