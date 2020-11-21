@@ -70,6 +70,7 @@ export const TextTituloNumeroPedido = styled.Text`
   font-family: 'Poppins-Bold';
   color: #000;
   font-size: 16px;
+  margin-left: -4px;
 `;
 
 export const ContainerModal = styled.View`

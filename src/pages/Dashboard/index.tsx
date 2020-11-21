@@ -173,53 +173,6 @@ const Dashboard: React.FC = () => {
             }}
           />
         </ProductContainer>
-
-        {/* <ProductList>
-              <Product>
-                <ProductTitle>Picanha</ProductTitle>
-                <DescriptionContainer>
-                  <Description>
-                    Arroz, feijão, filé de picanha e salada
-                  </Description>
-                </DescriptionContainer>
-                <PriceContainer>
-                  <ProductPrice>R$ 19,90</ProductPrice>
-                  <ProductButton onPress={() => {}}>
-                    <Icon size={25} name="plus" color="#000" />
-                  </ProductButton>
-                </PriceContainer>
-              </Product>
-
-              <Product>
-                <ProductTitle>Picanha</ProductTitle>
-                <DescriptionContainer>
-                  <Description>
-                    Arroz, feijão, filé de picanha e salada
-                  </Description>
-                </DescriptionContainer>
-                <PriceContainer>
-                  <ProductPrice>R$ 19,90</ProductPrice>
-                  <ProductButton onPress={() => {}}>
-                    <Icon size={25} name="plus" color="#000" />
-                  </ProductButton>
-                </PriceContainer>
-              </Product>
-
-              <Product>
-                <ProductTitle>Picanha</ProductTitle>
-                <DescriptionContainer>
-                  <Description>
-                    Arroz, feijão, filé de picanha e salada
-                  </Description>
-                </DescriptionContainer>
-                <PriceContainer>
-                  <ProductPrice>R$ 19,90</ProductPrice>
-                  <ProductButton onPress={() => {}}>
-                    <Icon size={25} name="plus" color="#000" />
-                  </ProductButton>
-                </PriceContainer>
-              </Product>
-            </ProductList> */}
       </Container>
       <Navigation />
     </>

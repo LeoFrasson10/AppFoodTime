@@ -121,7 +121,7 @@ const Profile: React.FC = () => {
               </Value>
             </Campo>
             <ObsAlterDados>
-              *Para alterar seus dados acessar o site www.foodtime.com.br
+              *Para alterar seus dados acessar o site www.foodtime.tk
             </ObsAlterDados>
             <Button onPress={handleLogOut}>Sair</Button>
           </Container>

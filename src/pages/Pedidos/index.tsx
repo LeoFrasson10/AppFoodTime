@@ -2,7 +2,13 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-nested-ternary */
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Image, ToastAndroid, ActivityIndicator, View } from 'react-native';
+import {
+  Image,
+  ToastAndroid,
+  ActivityIndicator,
+  View,
+  Alert,
+} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -149,6 +155,28 @@ const Dashboard: React.FC = () => {
     setModalVisible(!isModalVisible);
   }, [isModalVisible]);
 
+  const confirmCancel = useCallback(
+    item => {
+      Alert.alert(
+        'Cancelar pedido',
+        'Deseja cancelar seu pedido?',
+        [
+          {
+            text: 'Não',
+            onPress: () => console.log('negado'),
+            style: 'cancel',
+          },
+          // eslint-disable-next-line no-use-before-define
+          { text: 'Sim', onPress: () => handleCancel(item) },
+        ],
+        { cancelable: false },
+      );
+    },
+    // eslint-disable-next-line no-use-before-define
+    [handleCancel],
+  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function handleCancel(item: Pedido): Promise<void> {
     try {
       await api.get(`/cancelarUser/${item.id}`);
@@ -245,6 +273,26 @@ const Dashboard: React.FC = () => {
                         <TextTituloNumeroPedido>
                           {` Pedido #${item.id}`}
                         </TextTituloNumeroPedido>
+                        {item.status === 'Em Andamento' ? (
+                          <ProductNameStatus style={{ color: '#2f00ff' }}>
+                            {item.status}
+                          </ProductNameStatus>
+                        ) : item.status === 'Cancelado' ? (
+                          <ProductPrice style={{ color: '#D91818' }}>
+                            {item.status}
+                          </ProductPrice>
+                        ) : item.status === 'Pronto' ? (
+                          <ProductPrice style={{ color: '#008116' }}>
+                            {item.status}
+                          </ProductPrice>
+                        ) : item.status === 'Entregue' ? (
+                          <ProductPrice style={{ color: '#282828' }}>
+                            {item.status}
+                          </ProductPrice>
+                        ) : (
+                          <ProductPrice>{item.status}</ProductPrice>
+                        )}
+                        {/* <ProductPrice>{item.status}</ProductPrice> */}
                         <ProductTitle>
                           {`${format(new Date(item.data), 'dd/MM/yyyy')} às ${
                             item.hora
@@ -257,9 +305,8 @@ const Dashboard: React.FC = () => {
                           {item.status === 'Pendente' ? (
                             <>
                               <StatusContainer>
-                                <ProductPrice>{item.status}</ProductPrice>
                                 <ProductCancel
-                                  onPress={() => handleCancel(item)}
+                                  onPress={() => confirmCancel(item)}
                                 >
                                   <ProductPrice style={{ color: '#d91818' }}>
                                     Cancelar
@@ -269,7 +316,7 @@ const Dashboard: React.FC = () => {
                             </>
                           ) : (
                             <ProductStatus>
-                              {item.status === 'Em Andamento' ? (
+                              {/* {item.status === 'Em Andamento' ? (
                                 <ProductNameStatus style={{ color: '#282828' }}>
                                   {item.status}
                                 </ProductNameStatus>
@@ -279,7 +326,8 @@ const Dashboard: React.FC = () => {
                                 </ProductPrice>
                               ) : (
                                 <ProductPrice>{item.status}</ProductPrice>
-                              )}
+                              )} */}
+                              <ProductPrice />
                             </ProductStatus>
                           )}
 
