@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import { FlatList, TextInput } from 'react-native';
+import { FlatList } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
 export const Container = styled.SafeAreaView`
@@ -143,4 +143,8 @@ export const FinishText = styled.Text`
   font-size: 18px;
   color: #fff;
   font-weight: bold;
+`;
+
+export const TextInputPayment = styled.TextInput`
+  border-radius: 10px;
 `;

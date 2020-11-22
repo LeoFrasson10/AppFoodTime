@@ -263,28 +263,41 @@ const Cart: React.FC = () => {
                       placeholder="Alguma observação?"
                       returnKeyType="next"
                     />
-                    <Text style={{ color: '#fff', fontSize: 16 }}>
+                    {/* <Text style={{ color: '#fff', fontSize: 16 }}>
                       Qual a forma de pagamento?
-                    </Text>
-                    <Picker
-                      mode="dropdown"
-                      selectedValue={formaPagamento}
+                    </Text> */}
+
+                    <View
                       style={{
-                        height: 50,
-                        width: '100%',
                         backgroundColor: '#fff',
-                        color: '#000',
-                        marginBottom: 10,
-                        marginTop: 10,
+                        borderWidth: 1,
+                        borderRadius: 12,
                       }}
-                      onValueChange={itemValue =>
-                        handleFormaPagamento(itemValue)}
                     >
-                      <Picker.Item label="" value={0} />
-                      <Picker.Item label="Dinheiro" value={1} />
-                      <Picker.Item label="Cartão de Crédito" value={2} />
-                      <Picker.Item label="Cartão de Débito" value={3} />
-                    </Picker>
+                      <Picker
+                        mode="dropdown"
+                        selectedValue={formaPagamento}
+                        style={{
+                          height: 50,
+                          width: '100%',
+                          backgroundColor: '#fff',
+                          color: '#000',
+                          marginBottom: 10,
+                          marginTop: 10,
+                        }}
+                        onValueChange={itemValue =>
+                          handleFormaPagamento(itemValue)
+                        }
+                      >
+                        <Picker.Item
+                          label="Escolha a forma de pagamento"
+                          value={0}
+                        />
+                        <Picker.Item label="Dinheiro" value={1} />
+                        <Picker.Item label="Cartão de Crédito" value={2} />
+                        <Picker.Item label="Cartão de Débito" value={3} />
+                      </Picker>
+                    </View>
                   </ContainerObs>
                 </Form>
               </>
