@@ -1,12 +1,11 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Image, ToastAndroid, LogBox } from 'react-native';
+import { Image, ToastAndroid, LogBox, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Icone from 'react-native-vector-icons/FontAwesome';
 
 // import { FormHandles } from '@unform/core';
 
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
 import {
   Container,
   Text,
@@ -62,8 +61,8 @@ const Dashboard: React.FC = () => {
   const navigation = useNavigation();
 
   const loadItens = useCallback(async () => {
-    const valor = await api.get('/');
     setItens([]);
+    const valor = await api.get('/');
     setItens(valor.data);
   }, [setItens]);
 
@@ -74,6 +73,7 @@ const Dashboard: React.FC = () => {
   // }, [setCategorias]);
 
   useEffect(() => {
+    setItens([]);
     loadItens();
   }, [loadItens]);
 
@@ -122,6 +122,7 @@ const Dashboard: React.FC = () => {
       <Container>
         <Header style={{ justifyContent: 'flex-start' }}>
           <Text>Categorias</Text>
+          <ScrollView horizontal style={{marginLeft: "-34%"}}>
           <ContainerMain>
             <Category onPress={loadItens}>
               <Image source={full} />
@@ -143,12 +144,13 @@ const Dashboard: React.FC = () => {
               <Image source={beer} />
               <CategoryText>Bebidas</CategoryText>
             </Category>
+            
           </ContainerMain>
+          </ScrollView>
         </Header>
         {/* <Search onPress={loadItens}>
           <TextTodos>Todos</TextTodos>
         </Search> */}
-
         <ProductContainer>
           <ItensList
             data={itens}

@@ -46,9 +46,8 @@ export const CategoryText = styled.Text`
 `;
 
 export const ContainerMain = styled.View`
-  position: absolute;
   flex-direction: row;
-  top: 60px;
+  margin-top: 50px;
 `;
 
 export const Title = styled.Text`
@@ -76,7 +75,7 @@ export const Product = styled.View`
   padding: 16px 16px;
   border-radius: 10px;
   margin: 8px;
-  flex: 1;
+
 `;
 
 export const ProductTitle = styled.Text`
@@ -134,4 +133,6 @@ export const TextTodos = styled.Text`
 export const Description = styled.Text`
   font-family: 'Poppins-Regular';
 `;
-export const ItensList = styled(FlatList as new () => FlatList<Itens>)``;
+export const ItensList = styled(FlatList as new () => FlatList<Itens>)`
+  
+`;
